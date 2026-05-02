@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Neardis — Deals Near You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Bebas+Neue&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ──────────────────────────────────── */
+:root{
+  --bg:#080810;--bg2:#0f0f1a;--bg3:#161624;--bg4:#1e1e30;
+  --sur:#1a1a2e;--sur2:#222238;--sur3:#2a2a44;
+  --bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.13);
+  --tx:#f2f2ff;--tx2:#9090b8;--tx3:#50506a;
+  --ac:#ff3d6b;--ac2:#ff6a4d;
+  --bl:#4d8fff;--gr:#22c55e;--am:#f59e0b;--pu:#a855f7;--te:#14b8a6;
+  --r:14px;--r2:8px;--sh:0 8px 32px rgba(0,0,0,.5);
+  --gw:0 0 24px rgba(255,61,107,.25);
+}
+[data-theme="light"]{
+  --bg:#f8f8fc;--bg2:#fff;--bg3:#f0f0f8;--bg4:#e8e8f4;
+  --sur:#fff;--sur2:#f4f4fc;--sur3:#ebebf8;
+  --bd:rgba(0,0,0,.08);--bd2:rgba(0,0,0,.14);
+  --tx:#111128;--tx2:#505070;--tx3:#9090b0;
+  --sh:0 8px 32px rgba(0,0,0,.1);--gw:0 0 24px rgba(255,61,107,.12);
+}
+
+/* ─── RESET ───────────────────────────────────── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow:hidden}
+button,input,select,textarea{font-family:inherit}
+a{color:inherit;text-decoration:none}
+
+/* ─── SHELL ───────────────────────────────────── */
+.shell{display:flex;height:100dvh;overflow:hidden}
+
+/* ─── SIDEBAR ─────────────────────────────────── */
+.sidebar{
+  width:78px;background:var(--bg2);border-right:1px solid var(--bd);
+  display:flex;flex-direction:column;align-items:center;
+  padding:14px 0 10px;gap:1px;flex-shrink:0;z-index:200;
+  overflow-y:auto;overflow-x:hidden;scrollbar-width:none;
+}
+.sidebar::-webkit-scrollbar{display:none}
+.logo{
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;
+  background:linear-gradient(135deg,var(--ac),var(--ac2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  cursor:pointer;margin-bottom:14px;line-height:1;
+}
+.ni{
+  width:54px;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px;border-radius:10px;cursor:pointer;transition:all .18s;
+  color:var(--tx3);border:1px solid transparent;position:relative;
+}
+.ni:hover{background:var(--bg3);color:var(--tx2)}
+.ni.on{background:var(--sur3);color:var(--ac);border-color:rgba(255,61,107,.2)}
+.ni .ico{font-size:19px;line-height:1}
+.ni .lbl{font-size:9px;font-weight:600;letter-spacing:.3px}
+.ni .bdg{position:absolute;top:5px;right:8px;width:7px;height:7px;background:var(--ac);border-radius:50%;border:2px solid var(--bg2)}
+.nsep{width:34px;height:1px;background:var(--bd);margin:5px 0;flex-shrink:0}
+
+/* ─── MAIN ────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ─── TICKER ──────────────────────────────────── */
+.ticker-bar{
+  background:rgba(255,61,107,.06);border-bottom:1px solid rgba(255,61,107,.15);
+  padding:7px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;overflow:hidden;
+}
+.tlbl{font-size:9px;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:1px;
+  border:1px solid rgba(255,61,107,.3);padding:2px 8px;border-radius:4px;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.twrap{flex:1;overflow:hidden;position:relative;height:20px}
+.tinner{display:flex;gap:48px;animation:tick 30s linear infinite;white-space:nowrap;position:absolute}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.titem{font-size:11px;color:var(--tx2);display:flex;align-items:center;gap:6px}
+.tpct{font-weight:700;color:var(--ac);font-family:'JetBrains Mono',monospace}
+
+/* ─── PAGES ───────────────────────────────────── */
+.page{display:none;flex-direction:column;flex:1;overflow:hidden;animation:fadeIn .22s ease}
+.page.on{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── TOPBAR ──────────────────────────────────── */
+.topbar{
+  display:flex;align-items:center;gap:10px;padding:10px 18px;
+  background:var(--bg2);border-bottom:1px solid var(--bd);flex-shrink:0;min-height:54px;
+}
+.ttl{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;white-space:nowrap}
+.spacer{flex:1}
+
+/* ─── SCROLL ──────────────────────────────────── */
+.scroll{overflow-y:auto;flex:1;padding:18px;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
+.scroll::-webkit-scrollbar{width:4px}
+.scroll::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+
+/* ─── BUTTONS ─────────────────────────────────── */
+.btn{padding:8px 16px;border-radius:var(--r2);border:none;cursor:pointer;font-size:13px;font-weight:600;
+  transition:all .2s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-p{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
+.btn-p:hover{opacity:.88;transform:translateY(-1px);box-shadow:var(--gw)}
+.btn-g{background:var(--sur2);color:var(--tx);border:1px solid var(--bd)}
+.btn-g:hover{background:var(--sur3);border-color:var(--bd2)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-d{background:rgba(255,61,107,.12);color:var(--ac);border:1px solid rgba(255,61,107,.25)}
+.btn-s{background:rgba(34,197,94,.12);color:var(--gr);border:1px solid rgba(34,197,94,.25)}
+
+/* ─── SEARCH ──────────────────────────────────── */
+.sbar{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--bd);
+  border-radius:28px;padding:8px 16px;transition:border-color .2s;flex:1;max-width:360px}
+.sbar:focus-within{border-color:var(--ac)}
+.sbar input{background:none;border:none;outline:none;color:var(--tx);font-size:13px;flex:1;min-width:0}
+.sbar input::placeholder{color:var(--tx3)}
+
+/* ─── CHIPS ───────────────────────────────────── */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 14px;border-radius:20px;border:1px solid var(--bd);background:var(--sur2);
+  color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;white-space:nowrap}
+.chip:hover{border-color:var(--bd2);color:var(--tx)}
+.chip.on{background:rgba(255,61,107,.14);border-color:var(--ac);color:var(--ac)}
+
+/* ─── DEAL GRID ───────────────────────────────── */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(256px,1fr));gap:14px}
+
+/* ─── DEAL CARD ───────────────────────────────── */
+.dcard{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;
+  cursor:pointer;transition:all .22s;position:relative}
+.dcard:hover{border-color:var(--bd2);transform:translateY(-3px);box-shadow:var(--sh)}
+.dcard.flash{border-color:rgba(255,61,107,.5);box-shadow:0 0 0 1px rgba(255,61,107,.2),0 0 20px rgba(255,61,107,.08)}
+.dcard.flash:hover{box-shadow:0 0 0 1px rgba(255,61,107,.4),var(--gw)}
+.fbadge{position:absolute;top:10px;left:10px;background:var(--ac);color:#fff;
+  font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;z-index:2;letter-spacing:.5px}
+.dthumb{width:100%;height:130px;display:flex;align-items:center;justify-content:center;
+  font-size:48px;background:var(--bg3);position:relative}
+.ddisc{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.8);color:var(--ac);
+  font-weight:700;font-size:15px;padding:3px 9px;border-radius:6px;font-family:'JetBrains Mono',monospace}
+.dbody{padding:12px}
+.dshop{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.dtitle{font-size:13px;font-weight:600;margin-bottom:8px;line-height:1.35}
+.dmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dtag{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.tf{background:rgba(34,197,94,.12);color:var(--gr)}
+.tfa{background:rgba(236,72,153,.12);color:#ec4899}
+.te{background:rgba(77,143,255,.12);color:var(--bl)}
+.tb{background:rgba(168,85,247,.12);color:var(--pu)}
+.ts{background:rgba(245,158,11,.12);color:var(--am)}
+.th{background:rgba(20,184,166,.12);color:var(--te)}
+.ddist{font-size:10px;color:var(--tx3)}
+.dtimer{font-size:11px;font-weight:600;color:var(--am);margin-top:6px;font-family:'JetBrains Mono',monospace}
+.dtimer.urg{color:var(--ac);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.dfoot{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;
+  border-top:1px solid var(--bd);background:var(--bg3)}
+.wi{font-size:11px;color:var(--gr);font-weight:600}
+.bmb{background:none;border:none;cursor:pointer;font-size:16px;color:var(--tx3);
+  transition:all .2s;padding:2px;line-height:1}
+.bmb:hover{color:var(--ac);transform:scale(1.2)}
+.bmb.sv{color:var(--ac)}
+
+/* ─── STAT CARD ───────────────────────────────── */
+.sc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:16px}
+.slbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.sval{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;line-height:1}
+
+/* ─── TABS ────────────────────────────────────── */
+.tabs{display:flex;gap:4px;padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--bd);
+  flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:6px 16px;border-radius:var(--r2);cursor:pointer;font-size:12px;font-weight:500;
+  color:var(--tx2);transition:all .18s;border:1px solid transparent;white-space:nowrap;background:none}
+.tab:hover{color:var(--tx);background:var(--sur2)}
+.tab.on{background:var(--sur3);color:var(--tx);border-color:var(--bd)}
+
+/* ─── LIVE BADGE ──────────────────────────────── */
+.live{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;
+  letter-spacing:.5px;color:#fff;background:var(--ac);padding:3px 9px;border-radius:12px}
+.ldot{width:5px;height:5px;border-radius:50%;background:#fff;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+
+/* ─── VERIFIED ────────────────────────────────── */
+.vfy{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--bl);font-weight:600}
+
+/* ─── FORMS ───────────────────────────────────── */
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);margin-bottom:6px}
+.fi{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r2);
+  padding:10px 14px;color:var(--tx);font-size:13px;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--ac)}
+.fi::placeholder{color:var(--tx3)}
+textarea.fi{resize:vertical;min-height:88px}
+select.fi option{background:var(--bg2)}
+
+/* ─── TOGGLE ──────────────────────────────────── */
+.toggle{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.trk{width:40px;height:22px;border-radius:11px;background:var(--sur3);position:relative;
+  transition:background .2s;flex-shrink:0;border:1px solid var(--bd2)}
+.trk.on{background:var(--ac);border-color:var(--ac)}
+.tth{width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;
+  transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.trk.on .tth{transform:translateX(18px)}
+.tlb{font-size:13px;color:var(--tx2)}
+
+/* ─── OCC BAR ─────────────────────────────────── */
+.obar{height:5px;border-radius:3px;background:var(--sur3);overflow:hidden;margin-top:4px}
+.ofill{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* ─── MAP ─────────────────────────────────────── */
+.mwrap{display:grid;grid-template-columns:300px 1fr;flex:1;overflow:hidden}
+.mpanel{background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.mcanvas{position:relative;overflow:hidden;background:var(--bg3);flex:1}
+.mgrid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:52px 52px}
+.mroad-h{position:absolute;background:var(--bg4);left:0;right:0}
+.mroad-v{position:absolute;background:var(--bg4);top:0;bottom:0}
+.mbldg{position:absolute;background:var(--sur);border-radius:2px;border:1px solid var(--bd)}
+.mpin{position:absolute;cursor:pointer;transform:translate(-50%,-100%);z-index:10;transition:transform .15s}
+.mpin:hover{transform:translate(-50%,-100%) scale(1.15);z-index:20}
+.pbox{background:var(--ac);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;
+  border-radius:5px 5px 5px 0;white-space:nowrap;box-shadow:0 2px 10px rgba(255,61,107,.4);font-family:'JetBrains Mono',monospace}
+.ptail{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:7px solid var(--ac);margin-left:4px}
+.pfl{animation:pglow 1.3s infinite}
+@keyframes pglow{0%,100%{box-shadow:0 2px 10px rgba(255,61,107,.4)}50%{box-shadow:0 2px 24px rgba(255,61,107,.9)}}
+.mctrl{position:absolute;top:14px;right:14px;display:flex;flex-direction:column;gap:6px;z-index:20}
+.mbtn{width:36px;height:36px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--tx);transition:all .2s}
+.mbtn:hover{border-color:var(--ac);color:var(--ac)}
+.mleg{position:absolute;bottom:14px;left:14px;background:rgba(8,8,16,.92);backdrop-filter:blur(8px);
+  border:1px solid var(--bd);border-radius:var(--r2);padding:10px 14px;font-size:10px;z-index:20}
+.mlegrow{display:flex;align-items:center;gap:6px;margin-bottom:5px;color:var(--tx2)}
+.mdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.hblob{position:absolute;border-radius:50%;pointer-events:none}
+
+/* ─── MINI CARD ───────────────────────────────── */
+.mc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px;
+  display:flex;gap:10px;cursor:pointer;transition:all .18s;margin-bottom:8px}
+.mc:hover{border-color:var(--bd2);background:var(--sur2)}
+.mem{font-size:28px;flex-shrink:0;line-height:1}
+.minf{flex:1;min-width:0}
+.mshp{font-size:10px;color:var(--tx3)}
+.mttl{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msub{font-size:10px;color:var(--tx2);margin-top:2px}
+
+/* ─── SIGHTING ────────────────────────────────── */
+.sight{display:flex;gap:8px;padding:9px;border-radius:var(--r2);background:var(--sur);border:1px solid var(--bd);margin-bottom:8px}
+.sav{width:30px;height:30px;border-radius:50%;background:var(--sur3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.stx{font-size:11px;color:var(--tx2);line-height:1.4}
+.stm{font-size:10px;color:var(--tx3);margin-top:2px}
+
+/* ─── NOTIF ───────────────────────────────────── */
+.nit{display:flex;gap:12px;padding:14px 18px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .15s}
+.nit:hover{background:var(--sur2)}
+.nit.unr{background:rgba(255,61,107,.04);border-left:3px solid var(--ac)}
+.nico{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.nttl{font-size:13px;font-weight:600;margin-bottom:2px}
+.ndsc{font-size:11px;color:var(--tx2);line-height:1.45}
+.ntm{font-size:10px;color:var(--tx3);margin-top:3px}
+.udot{width:7px;height:7px;border-radius:50%;background:var(--ac);flex-shrink:0;margin-top:5px}
+
+/* ─── MODAL ───────────────────────────────────── */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1000;
+  overflow-y:auto;padding:32px 16px;backdrop-filter:blur(4px)}
+.modal.on{display:block}
+.mbox{max-width:900px;margin:0 auto;background:var(--bg2);border:1px solid var(--bd);border-radius:18px;overflow:hidden}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bd)}
+.mhttl{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px}
+.mbody{display:grid;grid-template-columns:1fr 320px}
+.mmain{padding:22px}
+.mside{border-left:1px solid var(--bd);padding:20px;background:var(--sur2)}
+
+/* ─── AVATAR ──────────────────────────────────── */
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;
+  cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:border-color .2s}
+.avatar:hover{border-color:var(--ac)}
+
+/* ─── BAR CHART ───────────────────────────────── */
+.bchart{display:flex;align-items:flex-end;gap:5px;height:100px}
+.bar{flex:1;border-radius:3px 3px 0 0;background:rgba(255,61,107,.2);transition:all .3s;cursor:pointer;min-height:4px}
+.bar:hover,.bar.pk{background:var(--ac)}
+
+/* ─── GRIDS ───────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ─── STEP PROGRESS ───────────────────────────── */
+.stprog{display:flex;gap:6px;margin-bottom:24px}
+.stdot{flex:1;height:3px;border-radius:2px;background:var(--sur3)}
+.stdot.dn{background:var(--gr)}
+.stdot.cur{background:var(--ac)}
+
+/* ─── UPLOAD ZONE ─────────────────────────────── */
+.uzone{border:2px dashed var(--bd2);border-radius:var(--r2);padding:22px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.uzone:hover{border-color:var(--ac);background:rgba(255,61,107,.04)}
+
+/* ─── PROFILE ─────────────────────────────────── */
+.phead{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:22px;margin-bottom:18px;display:flex;align-items:center;gap:18px}
+.pav{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));
+  display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:26px;color:#fff;flex-shrink:0;letter-spacing:2px}
+.pstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.pst{text-align:center;padding:12px;background:var(--sur);border-radius:var(--r2);border:1px solid var(--bd)}
+.psv{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;color:var(--ac)}
+.pslb{font-size:10px;color:var(--tx3);margin-top:2px}
+
+/* ─── SETTINGS STYLES ─────────────────────────── */
+.stab{padding:9px 12px;border-radius:var(--r2);cursor:pointer;font-size:13px;color:var(--tx2);margin-bottom:3px;transition:all .15s}
+.stab:hover{background:var(--sur2);color:var(--tx)}
+.stab.on{background:var(--sur3);color:var(--ac)}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--bd);gap:16px}
+.srlbl{font-size:14px;font-weight:500}
+.srdsc{font-size:11px;color:var(--tx3);margin-top:2px}
+
+/* ─── SECTION HEAD ────────────────────────────── */
+.sh{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);margin-bottom:12px}
+
+/* ─── GLOW ────────────────────────────────────── */
+@keyframes gp{0%,100%{box-shadow:0 0 0 0 rgba(255,61,107,.3)}50%{box-shadow:0 0 20px 4px rgba(255,61,107,.15)}}
+.glow{animation:gp 2.2s infinite}
+
+/* ─── ROUTE CARD ──────────────────────────────── */
+.rcard{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r2);padding:14px;
+  display:flex;align-items:center;gap:12px;margin-bottom:10px;cursor:pointer;transition:all .18s}
+.rcard:hover{border-color:var(--bd2);background:var(--sur2)}
+
+/* ─── SURPRISE CARD ───────────────────────────── */
+.surpc{background:var(--sur);border:2px solid rgba(255,61,107,.35);border-radius:var(--r);
+  padding:32px 24px;text-align:center;position:relative;overflow:hidden}
+.surpc::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(255,61,107,.07),transparent 65%);pointer-events:none}
+
+/* ─── BOTTOM NAV ──────────────────────────────── */
+.bnav{display:none;background:var(--bg2);border-top:1px solid var(--bd);padding:8px 0 max(8px,env(safe-area-inset-bottom));flex-shrink:0}
+.bnavinner{display:flex;justify-content:space-around;align-items:center}
+.bni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;color:var(--tx3);
+  transition:color .2s;padding:4px 8px;border-radius:var(--r2);min-width:44px;position:relative}
+.bni.on{color:var(--ac)}
+.bni .bdg{position:absolute;top:2px;right:6px;width:7px;height:7px;background:var(--ac);border-radius:50%;border:2px solid var(--bg2)}
+
+/* ─── RESPONSIVE ──────────────────────────────── */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .bnav{display:block}
+  .shell{flex-direction:column}
+  .main{flex:1;min-height:0}
+  .mwrap{grid-template-columns:1fr}
+  .mpanel{display:none}
+  .mbody{grid-template-columns:1fr}
+  .mside{display:none}
+  .g4{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr 1fr}
+  .g2{grid-template-columns:1fr}
+  .dgrid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  #feed-side{display:none}
+  #feed-main-grid{grid-template-columns:1fr}
+  #route-layout{grid-template-columns:1fr}
+  #route-config{display:none}
+  #bm-layout{grid-template-columns:1fr}
+  #bm-sidebar{display:none}
+  #st-layout{grid-template-columns:1fr}
+  #st-sidenav{display:none}
+}
+@media(max-width:480px){
+  .dgrid{grid-template-columns:1fr 1fr;gap:8px}
+  .dthumb{height:100px;font-size:36px}
+  .topbar{padding:8px 12px}
+  .ttl{font-size:18px}
+}
+
+/* ─── UTILS ───────────────────────────────────── */
+.flex{display:flex}.fca{display:flex;align-items:center}.fcb{display:flex;align-items:center;justify-content:space-between}
+.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}.gap12{gap:12px}
+.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}
+.wf{width:100%}.tc{text-align:center}.mono{font-family:'JetBrains Mono',monospace}
+.ac{color:var(--ac)}.gc{color:var(--gr)}.amc{color:var(--am)}.blc{color:var(--bl)}.muted{color:var(--tx3)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ SHELL ═══════════════════════════ -->
+<div class="shell">
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="logo" onclick="go('feed')">N</div>
+  <div class="ni on" data-p="feed" onclick="go('feed')"><span class="ico">🏷</span><span class="lbl">Feed</span></div>
+  <div class="ni" data-p="map" onclick="go('map')"><span class="ico">🗺</span><span class="lbl">Map</span></div>
+  <div class="ni" data-p="flash" onclick="go('flash')"><span class="ico">⚡</span><span class="lbl">Flash</span></div>
+  <div class="ni" data-p="route" onclick="go('route')"><span class="ico">🛣</span><span class="lbl">Route</span></div>
+  <div class="nsep"></div>
+  <div class="ni" data-p="bookmarks" onclick="go('bookmarks')"><span class="ico">🔖</span><span class="lbl">Saved</span></div>
+  <div class="ni" data-p="notifications" onclick="go('notifications')"><div class="bdg"></div><span class="ico">🔔</span><span class="lbl">Alerts</span></div>
+  <div class="ni" data-p="surprise" onclick="go('surprise')"><span class="ico">✨</span><span class="lbl">Surprise</span></div>
+  <div class="nsep"></div>
+  <div class="ni" data-p="business" onclick="go('business')"><span class="ico">📊</span><span class="lbl">Biz</span></div>
+  <div class="ni" data-p="verify" onclick="go('verify')"><span class="ico">✅</span><span class="lbl">Verify</span></div>
+  <div class="nsep"></div>
+  <div class="ni" data-p="profile" onclick="go('profile')"><span class="ico">👤</span><span class="lbl">Profile</span></div>
+  <div class="ni" data-p="settings" onclick="go('settings')"><span class="ico">⚙️</span><span class="lbl">Settings</span></div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- TICKER -->
+<div class="ticker-bar" id="ticker-bar">
+  <div class="tlbl">⚡ FLASH</div>
+  <div class="twrap"><div class="tinner" id="ticker"></div></div>
+</div>
+
+<!-- ══════════════ PAGE: FEED ══════════════ -->
+<div class="page on" id="pg-feed">
+  <div class="topbar">
+    <div class="ttl">Neardis</div>
+    <div class="sbar"><span style="color:var(--tx3)">🔍</span><input type="text" placeholder="Search deals near you…" id="feed-q" oninput="renderFeed()"></div>
+    <div class="spacer"></div>
+    <button class="btn btn-g btn-sm" onclick="go('surprise')">✨ Surprise</button>
+    <button class="btn btn-p btn-sm" onclick="go('business')">+ Post Deal</button>
+    <div class="avatar" id="av1" onclick="go('settings')">👤</div>
+  </div>
+  <div style="padding:10px 16px;border-bottom:1px solid var(--bd);background:var(--bg2);display:flex;flex-direction:column;gap:8px;flex-shrink:0">
+    <div class="chips" id="cat-chips">
+      <div class="chip on" data-c="all" onclick="setCat('all',this)">🏷 All</div>
+      <div class="chip" data-c="food" onclick="setCat('food',this)">🍔 Food</div>
+      <div class="chip" data-c="fashion" onclick="setCat('fashion',this)">👗 Fashion</div>
+      <div class="chip" data-c="electronics" onclick="setCat('electronics',this)">📱 Electronics</div>
+      <div class="chip" data-c="beauty" onclick="setCat('beauty',this)">💄 Beauty</div>
+      <div class="chip" data-c="sports" onclick="setCat('sports',this)">⚽ Sports</div>
+      <div class="chip" data-c="home" onclick="setCat('home',this)">🏠 Home</div>
+      <div class="chip" id="flash-chip" onclick="toggleFlash(this)">⚡ Flash Only</div>
+    </div>
+    <div class="fca gap8" style="font-size:11px;color:var(--tx3)">
+      <span>📍 <strong style="color:var(--tx)">Nearest & Newest</strong></span>
+      <span>·</span><span id="feed-cnt">— deals</span>
+      <span>·</span><span>Radius: <strong style="color:var(--tx)">2km</strong></span>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 276px;flex:1;overflow:hidden" id="feed-main-grid">
+    <div class="scroll" id="feed-scroll"><div class="dgrid" id="deal-grid"></div></div>
+    <div style="background:var(--bg2);border-left:1px solid var(--bd);overflow-y:auto;padding:16px;scrollbar-width:thin" id="feed-side">
+      <div class="sh">🔥 Area Heatmap</div>
+      <div id="hmap" class="mb16"></div>
+      <div class="sh">👁 Recent Sightings</div>
+      <div id="fsights" class="mb16"></div>
+      <div class="sh">⏳ Expiring Soon</div>
+      <div id="fexpire"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: MAP ══════════════ -->
+<div class="page" id="pg-map">
+  <div class="topbar">
+    <div class="ttl">📍 Deal Map</div>
+    <div class="chips">
+      <div class="chip on" onclick="setMapCat('all',this)">All</div>
+      <div class="chip" onclick="setMapCat('food',this)">🍔 Food</div>
+      <div class="chip" onclick="setMapCat('electronics',this)">📱 Tech</div>
+      <div class="chip" onclick="setMapCat('fashion',this)">👗 Fashion</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="toggle" onclick="toggleHeat(this)">
+      <div class="trk" id="heat-trk"><div class="tth"></div></div>
+      <span style="font-size:11px;color:var(--tx2)">Heatmap</span>
+    </div>
+  </div>
+  <div class="mwrap">
+    <div class="mpanel">
+      <div style="padding:10px;border-bottom:1px solid var(--bd)">
+        <div class="sbar" style="max-width:none"><span style="color:var(--tx3)">🔍</span><input type="text" placeholder="Search area or shop…" id="map-q" oninput="renderMapList()"></div>
+      </div>
+      <div style="padding:8px 12px;font-size:10px;color:var(--tx3);border-bottom:1px solid var(--bd)" id="map-cnt">— deals in view</div>
+      <div class="scroll" style="padding:10px" id="map-list"></div>
+    </div>
+    <div class="mcanvas">
+      <div id="map-area" style="position:absolute;inset:0">
+        <div class="mgrid"></div>
+        <div class="mroad-h" style="top:42%;height:40px"></div>
+        <div class="mroad-h" style="top:19%;height:20px"></div>
+        <div class="mroad-h" style="top:68%;height:22px"></div>
+        <div class="mroad-v" style="left:28%;width:30px"></div>
+        <div class="mroad-v" style="left:63%;width:22px"></div>
+        <div class="mbldg" style="left:4%;top:4%;width:21%;height:13%"></div>
+        <div class="mbldg" style="left:28%;top:4%;width:11%;height:13%"></div>
+        <div class="mbldg" style="left:32%;top:4%;width:27%;height:13%"></div>
+        <div class="mbldg" style="left:66%;top:4%;width:29%;height:13%"></div>
+        <div class="mbldg" style="left:4%;top:24%;width:22%;height:15%"></div>
+        <div class="mbldg" style="left:32%;top:24%;width:27%;height:15%"></div>
+        <div class="mbldg" style="left:66%;top:24%;width:29%;height:15%"></div>
+        <div class="mbldg" style="left:4%;top:50%;width:21%;height:16%"></div>
+        <div class="mbldg" style="left:32%;top:50%;width:27%;height:16%"></div>
+        <div class="mbldg" style="left:66%;top:50%;width:29%;height:16%"></div>
+        <div class="mbldg" style="left:4%;top:72%;width:90%;height:20%"></div>
+        <div id="map-pins"></div>
+        <div id="heat-blobs" style="display:none;pointer-events:none">
+          <div class="hblob" style="left:10%;top:22%;width:220px;height:220px;background:radial-gradient(circle,rgba(255,61,107,.38),transparent 70%)"></div>
+          <div class="hblob" style="left:42%;top:10%;width:170px;height:170px;background:radial-gradient(circle,rgba(255,106,77,.32),transparent 70%)"></div>
+          <div class="hblob" style="left:56%;top:46%;width:190px;height:190px;background:radial-gradient(circle,rgba(245,158,11,.28),transparent 70%)"></div>
+          <div class="hblob" style="left:25%;top:58%;width:140px;height:140px;background:radial-gradient(circle,rgba(168,85,247,.24),transparent 70%)"></div>
+        </div>
+        <div style="position:absolute;left:46%;top:41%;transform:translate(-50%,-50%);z-index:15">
+          <div style="width:16px;height:16px;border-radius:50%;background:var(--bl);border:3px solid #fff;box-shadow:0 0 0 7px rgba(77,143,255,.18)"></div>
+        </div>
+      </div>
+      <div class="mctrl">
+        <div class="mbtn">+</div><div class="mbtn">-</div>
+        <div class="mbtn" onclick="alert('Locating…')">📍</div>
+        <div class="mbtn" onclick="toggleHeatBtn()">🔥</div>
+      </div>
+      <div class="mleg">
+        <div class="mlegrow"><div class="mdot" style="background:var(--ac)"></div>Active deal</div>
+        <div class="mlegrow"><div class="mdot" style="background:var(--am)"></div>Flash deal</div>
+        <div class="mlegrow" style="margin:0"><div class="mdot" style="background:var(--bl)"></div>Your location</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: FLASH ══════════════ -->
+<div class="page" id="pg-flash">
+  <div class="topbar">
+    <div class="ttl">⚡ Flash Deals</div>
+    <div class="live"><div class="ldot"></div>LIVE</div>
+    <span style="font-size:12px;color:var(--tx2)">Time-sensitive · Near you</span>
+    <div class="spacer"></div>
+    <span style="font-size:12px;color:var(--tx3)" id="flash-cnt"></span>
+  </div>
+  <div style="background:rgba(255,61,107,.07);border-bottom:1px solid rgba(255,61,107,.18);padding:8px 18px;flex-shrink:0;font-size:11px;color:var(--ac);font-weight:700">
+    ⚡ Flash Deals expire fast — act now before they're gone!
+  </div>
+  <div class="scroll"><div class="dgrid" id="flash-grid"></div><div id="flash-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--tx3)"><div style="font-size:52px;margin-bottom:14px">⚡</div><div style="font-size:15px;font-weight:600">No Flash Deals Right Now</div><div style="font-size:12px;margin-top:6px">Check back soon!</div></div></div>
+</div>
+
+<!-- ══════════════ PAGE: ROUTE ══════════════ -->
+<div class="page" id="pg-route">
+  <div class="topbar">
+    <div class="ttl">🛣 Route Alerts</div>
+    <span style="font-size:11px;color:var(--tx2)">Deal alerts along your commute</span>
+    <div class="spacer"></div>
+    <button class="btn btn-p btn-sm" onclick="document.getElementById('r-start').focus()">+ Add Route</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 300px;flex:1;overflow:hidden" id="route-layout">
+    <div class="scroll" style="padding:18px">
+      <div class="sh mb12">Your Saved Routes</div>
+      <div id="routes-list" class="mb20"></div>
+      <div class="sh mb12">Deals Along Your Route</div>
+      <div class="dgrid" id="route-deals"></div>
+    </div>
+    <div style="background:var(--bg2);border-left:1px solid var(--bd);overflow-y:auto;padding:18px;scrollbar-width:thin" id="route-config">
+      <div class="sh mb12">Configure Route</div>
+      <div class="fg"><label class="fl">Start Point</label><input class="fi" type="text" placeholder="Home address" id="r-start"></div>
+      <div class="fg"><label class="fl">End Point</label><input class="fi" type="text" placeholder="Office / Destination" id="r-end"></div>
+      <div class="fg">
+        <label class="fl">Alert Radius</label>
+        <input type="range" min="100" max="1000" value="400" style="width:100%;accent-color:var(--ac)" oninput="document.getElementById('rad-v').textContent=this.value+'m'">
+        <div style="font-size:11px;color:var(--tx2);margin-top:3px" id="rad-v">400m</div>
+      </div>
+      <div class="fg"><label class="fl">Active Hours</label>
+        <div class="g2" style="gap:8px"><input class="fi" type="time" value="07:30" id="r-from"><input class="fi" type="time" value="09:30" id="r-to"></div>
+      </div>
+      <div class="fg"><label class="fl">Categories</label>
+        <div class="chips"><div class="chip on" onclick="this.classList.toggle('on')">🍔 Food</div><div class="chip" onclick="this.classList.toggle('on')">☕ Coffee</div><div class="chip on" onclick="this.classList.toggle('on')">🛒 Grocery</div></div>
+      </div>
+      <button class="btn btn-p wf" onclick="saveRoute()">Save Route Alert</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: BOOKMARKS ══════════════ -->
+<div class="page" id="pg-bookmarks">
+  <div class="topbar">
+    <div class="ttl">🔖 Saved Deals</div>
+    <span id="bm-cnt" style="font-size:12px;color:var(--tx2)"></span>
+    <div class="spacer"></div>
+    <button class="btn btn-g btn-sm" onclick="if(confirm('Clear all saved deals?')){S.saved.clear();saveS();renderBM()}">Clear All</button>
+  </div>
+  <div style="display:grid;grid-template-columns:200px 1fr;flex:1;overflow:hidden" id="bm-layout">
+    <div style="background:var(--bg2);border-right:1px solid var(--bd);padding:16px;overflow-y:auto" id="bm-sidebar">
+      <div class="sh mb8">Collections</div>
+      <div id="bm-cols"></div>
+    </div>
+    <div class="scroll" style="padding:18px">
+      <div id="bm-expbanner" class="mb16"></div>
+      <div class="dgrid" id="bm-grid"></div>
+      <div id="bm-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--tx3)">
+        <div style="font-size:52px;margin-bottom:14px">🔖</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:8px">No Saved Deals</div>
+        <button class="btn btn-p" onclick="go('feed')">Browse Deals</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: NOTIFICATIONS ══════════════ -->
+<div class="page" id="pg-notifications">
+  <div class="topbar">
+    <div class="ttl">🔔 Notifications</div>
+    <span id="unr-cnt" style="font-size:11px;color:var(--tx2)"></span>
+    <div class="spacer"></div>
+    <button class="btn btn-g btn-sm" onclick="markAllRead()">Mark all read</button>
+    <button class="btn btn-g btn-sm" onclick="clearNotifs()">Clear</button>
+  </div>
+  <div class="tabs">
+    <div class="tab on" data-nt="all" onclick="setNTab('all',this)">All</div>
+    <div class="tab" data-nt="deals" onclick="setNTab('deals',this)">New Deals</div>
+    <div class="tab" data-nt="expiry" onclick="setNTab('expiry',this)">Expiring</div>
+    <div class="tab" data-nt="sightings" onclick="setNTab('sightings',this)">Sightings</div>
+    <div class="tab" data-nt="route" onclick="setNTab('route',this)">Route</div>
+  </div>
+  <div class="scroll" style="padding:0" id="notif-list"></div>
+</div>
+
+<!-- ══════════════ PAGE: SURPRISE ══════════════ -->
+<div class="page" id="pg-surprise">
+  <div class="topbar"><div class="ttl">✨ Surprise Me</div><span style="font-size:12px;color:var(--tx2)">One top-rated deal within 500m</span></div>
+  <div class="scroll">
+    <div style="max-width:540px;margin:0 auto">
+      <div class="surpc mb20">
+        <div style="font-size:64px;margin-bottom:16px;line-height:1" id="surp-em">✨</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:8px" id="surp-ttl">Ready for a discovery?</div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:22px;line-height:1.6" id="surp-dsc">Let us pick the best-rated deal near you right now.</div>
+        <div id="surp-rev" style="display:none;margin-bottom:20px;background:var(--bg3);border-radius:var(--r);padding:18px;text-align:left"></div>
+        <div class="fg mb16" style="text-align:left">
+          <label class="fl mb8">Category (optional)</label>
+          <div class="chips" id="surp-chips">
+            <div class="chip on" data-sc="all" onclick="setSurpCat('all',this)">🏷 Any</div>
+            <div class="chip" data-sc="food" onclick="setSurpCat('food',this)">🍔 Food</div>
+            <div class="chip" data-sc="fashion" onclick="setSurpCat('fashion',this)">👗 Fashion</div>
+            <div class="chip" data-sc="electronics" onclick="setSurpCat('electronics',this)">📱 Tech</div>
+            <div class="chip" data-sc="beauty" onclick="setSurpCat('beauty',this)">💄 Beauty</div>
+          </div>
+        </div>
+        <button class="btn btn-p" style="font-size:15px;padding:13px 32px" id="surp-btn" onclick="rollSurprise()">✨ Surprise Me!</button>
+        <div style="font-size:11px;color:var(--tx3);margin-top:10px">500m radius · Min ⭐ 4.0</div>
+      </div>
+      <div class="sh mb12">Recent Surprises</div>
+      <div id="surp-hist"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: BUSINESS ══════════════ -->
+<div class="page" id="pg-business">
+  <div class="topbar">
+    <div class="ttl">📊 Business</div>
+    <div class="vfy">✓ Verified</div>
+    <div class="spacer"></div>
+    <div class="live"><div class="ldot"></div><span id="biz-act">0</span> Active</div>
+    <button class="btn btn-p btn-sm" onclick="setBizTab('deals',document.querySelector('[data-bt=deals]'))">+ New Deal</button>
+  </div>
+  <div class="tabs">
+    <div class="tab on" data-bt="overview" onclick="setBizTab('overview',this)">Overview</div>
+    <div class="tab" data-bt="deals" onclick="setBizTab('deals',this)">My Deals</div>
+    <div class="tab" data-bt="analytics" onclick="setBizTab('analytics',this)">Analytics</div>
+    <div class="tab" data-bt="insights" onclick="setBizTab('insights',this)">Insights</div>
+    <div class="tab" data-bt="occupancy" onclick="setBizTab('occupancy',this)">Occupancy</div>
+  </div>
+  <div class="scroll" style="padding:18px" id="biz-content"></div>
+</div>
+
+<!-- ══════════════ PAGE: VERIFY ══════════════ -->
+<div class="page" id="pg-verify">
+  <div class="topbar"><div class="ttl">✅ Verification</div><span style="font-size:12px;color:var(--tx2)">Get your business verified</span></div>
+  <div class="scroll">
+    <div style="max-width:580px;margin:0 auto">
+      <div class="sc mb20">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:8px">Get Verified on Neardis</div>
+        <div style="font-size:13px;color:var(--tx2);line-height:1.65;margin-bottom:14px">Verified businesses get a trust badge, appear first in search, and can post unlimited deals.</div>
+        <div class="fca gap12" style="flex-wrap:wrap">
+          <span style="font-size:12px;color:var(--gr)">✓ Trust Badge</span>
+          <span style="font-size:12px;color:var(--bl)">✓ Priority Listing</span>
+          <span style="font-size:12px;color:var(--pu)">✓ Unlimited Deals</span>
+          <span style="font-size:12px;color:var(--am)">✓ Analytics</span>
+        </div>
+      </div>
+      <div class="stprog" id="vsteps"></div>
+      <div id="vcontent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: PROFILE ══════════════ -->
+<div class="page" id="pg-profile">
+  <div class="topbar">
+    <div class="ttl">👤 Profile</div>
+    <div class="spacer"></div>
+    <button class="btn btn-g btn-sm" onclick="toggleEditProf()">✏️ Edit</button>
+    <button class="btn btn-g btn-sm" onclick="go('settings')">⚙️ Settings</button>
+  </div>
+  <div class="scroll">
+    <div style="max-width:680px;margin:0 auto">
+      <div id="prof-out" style="display:none;text-align:center;padding:60px 20px">
+        <div style="font-size:60px;margin-bottom:16px">👤</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;margin-bottom:8px">Sign In to View Profile</div>
+        <div style="font-size:13px;color:var(--tx2);margin-bottom:20px">Save deals, set route alerts, and track redemptions.</div>
+        <button class="btn btn-p" onclick="go('settings')">Sign In</button>
+      </div>
+      <div id="prof-in">
+        <div class="phead">
+          <div class="pav" id="pav">?</div>
+          <div style="flex:1">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px" id="pname">Your Name</div>
+            <div style="font-size:12px;color:var(--tx2);margin-top:3px" id="ploc">📍 Location not set</div>
+            <div style="font-size:12px;color:var(--tx2)" id="pemail"></div>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap" id="ptags"></div>
+          </div>
+          <div style="text-align:right"><div class="vfy">✓ Verified User</div><div style="font-size:10px;color:var(--tx3);margin-top:3px" id="plvl">Level 1 Scout</div></div>
+        </div>
+        <div id="edit-prof-form" style="display:none;background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:18px">
+          <div style="font-weight:700;margin-bottom:14px">Edit Profile</div>
+          <div class="g2" style="gap:12px">
+            <div class="fg"><label class="fl">Name</label><input class="fi" type="text" id="ep-name"></div>
+            <div class="fg"><label class="fl">Location</label><input class="fi" type="text" id="ep-loc" placeholder="Your area / city"></div>
+          </div>
+          <div class="fg"><label class="fl">Bio</label><textarea class="fi" id="ep-bio" placeholder="Describe your deal-hunting style…" style="min-height:70px"></textarea></div>
+          <div class="fca gap8 mt8">
+            <button class="btn btn-p" onclick="saveProfEdit()">Save</button>
+            <button class="btn btn-g" onclick="toggleEditProf()">Cancel</button>
+          </div>
+        </div>
+        <div class="pstats mb16">
+          <div class="pst"><div class="psv" id="ps1">0</div><div class="pslb">Deals Saved</div></div>
+          <div class="pst"><div class="psv" id="ps2">0</div><div class="pslb">Redeemed</div></div>
+          <div class="pst"><div class="psv" id="ps3">0</div><div class="pslb">Sightings</div></div>
+        </div>
+        <div class="sh mb12">🕐 Recently Viewed</div>
+        <div class="dgrid" id="rec-viewed"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PAGE: SETTINGS ══════════════ -->
+<div class="page" id="pg-settings">
+  <div class="topbar"><div class="ttl">⚙️ Settings</div></div>
+  <div style="display:grid;grid-template-columns:220px 1fr;flex:1;overflow:hidden" id="st-layout">
+    <div style="background:var(--bg2);border-right:1px solid var(--bd);padding:16px;overflow-y:auto" id="st-sidenav">
+      <div class="sh mb8">Account</div>
+      <div class="stab on" data-st="account" onclick="setSTab('account',this)">👤 Account & Login</div>
+      <div class="stab" data-st="eprofile" onclick="setSTab('eprofile',this)">✏️ Edit Profile</div>
+      <div class="sh mb8 mt16">App</div>
+      <div class="stab" data-st="appear" onclick="setSTab('appear',this)">🎨 Appearance</div>
+      <div class="stab" data-st="location" onclick="setSTab('location',this)">📍 Location</div>
+      <div class="stab" data-st="notifset" onclick="setSTab('notifset',this)">🔔 Notifications</div>
+      <div class="sh mb8 mt16">More</div>
+      <div class="stab" data-st="privacy" onclick="setSTab('privacy',this)">🔒 Privacy</div>
+      <div class="stab" data-st="about" onclick="setSTab('about',this)">ℹ️ About</div>
+    </div>
+    <div class="scroll" style="padding:24px" id="st-content"></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- BOTTOM NAV -->
+<nav class="bnav" id="bnav">
+  <div class="bnavinner">
+    <div class="bni on" data-p="feed" onclick="go('feed')"><span class="ico">🏷</span><span class="lbl" style="font-size:9px;font-weight:600">Feed</span></div>
+    <div class="bni" data-p="map" onclick="go('map')"><span class="ico">🗺</span><span class="lbl" style="font-size:9px;font-weight:600">Map</span></div>
+    <div class="bni" data-p="flash" onclick="go('flash')"><span class="ico">⚡</span><span class="lbl" style="font-size:9px;font-weight:600">Flash</span></div>
+    <div class="bni" data-p="bookmarks" onclick="go('bookmarks')"><span class="ico">🔖</span><span class="lbl" style="font-size:9px;font-weight:600">Saved</span></div>
+    <div class="bni" data-p="notifications" onclick="go('notifications')"><div class="bdg"></div><span class="ico">🔔</span><span class="lbl" style="font-size:9px;font-weight:600">Alerts</span></div>
+    <div class="bni" data-p="settings" onclick="go('settings')"><span class="ico">⚙️</span><span class="lbl" style="font-size:9px;font-weight:600">Settings</span></div>
+  </div>
+</nav>
+
+<!-- DEAL MODAL -->
+<div class="modal" id="deal-modal" onclick="if(event.target===this)closeDeal()">
+  <div class="mbox">
+    <div class="mhead">
+      <div class="mhttl">Deal Details</div>
+      <div class="fca gap8">
+        <button onclick="go('map')" style="background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r2);padding:6px 12px;color:var(--tx);cursor:pointer;font-family:inherit;font-size:11px">🗺 Map</button>
+        <button onclick="closeDeal()" style="background:var(--sur2);border:1px solid var(--bd);border-radius:var(--r2);padding:6px 12px;color:var(--tx);cursor:pointer;font-family:inherit;font-size:12px">✕ Close</button>
+      </div>
+    </div>
+    <div class="mbody">
+      <div class="mmain" id="modal-main"></div>
+      <div class="mside" id="modal-side"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════
+const DEALS = [
+  {id:1,shop:"Café Zest",emoji:"☕",cat:"food",title:"50% Off All Hot Beverages",disc:50,dist:.2,expiry:7200,flash:true,rating:4.8,worthit:94,sightings:12,desc:"All espresso drinks, filter coffee, and teas at half price. Dine-in only during morning hours.",lat:36,lng:18,orig:600,price:300},
+  {id:2,shop:"TechCorner",emoji:"📱",cat:"electronics",title:"Phone Accessory Bundle 3-for-1",disc:66,dist:.45,expiry:28800,flash:false,rating:4.5,worthit:88,sightings:5,desc:"Pick any 3 premium cases, chargers or earbuds and pay for one. All major brands covered.",lat:22,lng:45,orig:3600,price:1200},
+  {id:3,shop:"Style Outlet",emoji:"👗",cat:"fashion",title:"End of Season — 40% Off Everything",disc:40,dist:.7,expiry:86400,flash:false,rating:4.2,worthit:81,sightings:23,desc:"Full spring & summer collection at 40% off. Sizes going fast. In-store only.",lat:55,lng:68,orig:8000,price:4800},
+  {id:4,shop:"Glow Studio",emoji:"💆",cat:"beauty",title:"Facial + Massage Combo",disc:35,dist:.3,expiry:18000,flash:true,rating:4.9,worthit:97,sightings:8,desc:"60-min deep-cleanse facial + 30-min shoulder massage by certified therapists. Walk-in welcome.",lat:40,lng:72,orig:4500,price:2925},
+  {id:5,shop:"FitZone Gym",emoji:"🏋",cat:"sports",title:"First Month — 30% Off",disc:30,dist:.9,expiry:172800,flash:false,rating:4.3,worthit:79,sightings:3,desc:"Full facility access, unlimited group classes, free trainer session included.",lat:18,lng:56,orig:6000,price:4200},
+  {id:6,shop:"HomeVibes",emoji:"🛋",cat:"home",title:"Buy 2 Get 1 Free — Cushions",disc:33,dist:.5,expiry:43200,flash:false,rating:4.0,worthit:72,sightings:6,desc:"Mix and match cushion covers and throws. Limited time offer.",lat:64,lng:34,orig:2400,price:1600},
+  {id:7,shop:"Burger Bros",emoji:"🍔",cat:"food",title:"BOGO Double Burgers",disc:50,dist:.15,expiry:10800,flash:true,rating:4.7,worthit:92,sightings:31,desc:"Buy one double smash burger, get one free. Dine-in and takeaway.",lat:48,lng:27,orig:1200,price:600},
+  {id:8,shop:"Luxury Timepieces",emoji:"⌚",cat:"electronics",title:"Clearance — Up to 60% Off",disc:60,dist:1.2,expiry:259200,flash:false,rating:4.1,worthit:76,sightings:4,desc:"Premium watch brands clearing last-season inventory. Very limited pieces.",lat:75,lng:60,orig:45000,price:18000},
+  {id:9,shop:"Sushi Maru",emoji:"🍣",cat:"food",title:"Lunch Set — 45% Off",disc:45,dist:.6,expiry:5400,flash:true,rating:4.6,worthit:89,sightings:19,desc:"Premium 8-piece sushi set with miso soup and salad. Lunch hours only, 12–3 PM.",lat:32,lng:50,orig:2200,price:1210},
+  {id:10,shop:"Sole Street",emoji:"👟",cat:"fashion",title:"Nike & Adidas — 25% Off",disc:25,dist:.8,expiry:129600,flash:false,rating:4.4,worthit:83,sightings:14,desc:"Selected branded shoes this weekend only. While stocks last.",lat:60,lng:75,orig:12000,price:9000},
+  {id:11,shop:"The Brew Lab",emoji:"🍺",cat:"food",title:"Happy Hour 2-for-1",disc:50,dist:.25,expiry:3600,flash:true,rating:4.5,worthit:91,sightings:22,desc:"All drinks 2-for-1, 5–7 PM every day. Bar seating only.",lat:43,lng:14,orig:900,price:450},
+  {id:12,shop:"EcoNest",emoji:"🪴",cat:"home",title:"Indoor Plant Bundle",disc:20,dist:1.0,expiry:345600,flash:false,rating:3.9,worthit:68,sightings:2,desc:"6-plant starter set with ceramic pots, soil and care guide.",lat:14,lng:80,orig:3500,price:2800},
+];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const S = {
+  page: 'feed',
+  theme: localStorage.getItem('nd-theme') || 'dark',
+  user: JSON.parse(localStorage.getItem('nd-user') || 'null') || {name:'',email:'',initials:'',loggedIn:false},
+  saved: new Set(JSON.parse(localStorage.getItem('nd-saved') || '[]')),
+  viewed: JSON.parse(localStorage.getItem('nd-viewed') || '[]'),
+  cat: 'all',
+  flashF: false,
+  heatOn: false,
+  mapCat: 'all',
+  vStep: parseInt(localStorage.getItem('nd-vstep') || '0'),
+  myDeals: JSON.parse(localStorage.getItem('nd-mydeals') || '[]'),
+  routes: JSON.parse(localStorage.getItem('nd-routes') || '[]'),
+  notifs: JSON.parse(localStorage.getItem('nd-notifs') || 'null') || [
+    {id:1,type:'deals',icon:'⚡',bg:'rgba(255,61,107,.14)',title:'Flash Deal Near You',desc:'A new flash deal just dropped 200m from you!',time:'2m ago',read:false},
+    {id:2,type:'expiry',icon:'⏳',bg:'rgba(245,158,11,.14)',title:'Saved Deal Expiring',desc:'A bookmarked deal expires in under 2 hours.',time:'30m ago',read:false},
+    {id:3,type:'sightings',icon:'👁',bg:'rgba(34,197,94,.14)',title:'Sighting Confirmed',desc:'3 users confirmed a deal near you is still active.',time:'1h ago',read:false},
+    {id:4,type:'deals',icon:'🏷',bg:'rgba(77,143,255,.14)',title:'New Deals Posted',desc:'5 new deals added within 1km of you.',time:'2h ago',read:true},
+    {id:5,type:'route',icon:'🛣',bg:'rgba(168,85,247,.14)',title:'Route Alert',desc:'A deal along your commute is now active.',time:'3h ago',read:true},
+  ],
+  ntab: 'all',
+  stab: 'account',
+  bizTab: 'overview',
+  surpCat: 'all',
+  surpHist: JSON.parse(localStorage.getItem('nd-surphist') || '[]'),
+  profData: JSON.parse(localStorage.getItem('nd-profdata') || '{}'),
+};
+
+function saveS(){
+  localStorage.setItem('nd-saved', JSON.stringify([...S.saved]));
+  localStorage.setItem('nd-viewed', JSON.stringify(S.viewed.slice(0,20)));
+  localStorage.setItem('nd-user', JSON.stringify(S.user));
+  localStorage.setItem('nd-notifs', JSON.stringify(S.notifs));
+  localStorage.setItem('nd-mydeals', JSON.stringify(S.myDeals));
+  localStorage.setItem('nd-routes', JSON.stringify(S.routes));
+  localStorage.setItem('nd-surphist', JSON.stringify(S.surpHist));
+  localStorage.setItem('nd-profdata', JSON.stringify(S.profData));
+  localStorage.setItem('nd-vstep', S.vStep);
+}
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+const fmt = {
+  time(s){if(s<=0)return'Expired';const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;if(h>0)return`${h}h ${m}m`;if(m>0)return`${m}m ${sc}s`;return`${sc}s`},
+  dist(d){return d<1?`${(d*1000).toFixed(0)}m`:`${d.toFixed(1)}km`},
+  price(n){return`Rs ${n.toLocaleString()}`},
+  tag(cat){const m={food:'tf',fashion:'tfa',electronics:'te',beauty:'tb',sports:'ts',home:'th'};return m[cat]||'tf'},
+  tagLbl(cat){const m={food:'Food',fashion:'Fashion',electronics:'Electronics',beauty:'Beauty',sports:'Sports',home:'Home'};return m[cat]||cat},
+};
+
+// ═══════════════════════════════════════════════════
+// ROUTER
+// ═══════════════════════════════════════════════════
+function go(name){
+  if(S.page===name)return;
+  S.page=name;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+name).classList.add('on');
+  document.querySelectorAll('.ni,.bni').forEach(el=>{
+    el.classList.toggle('on', el.dataset.p===name);
+  });
+  // Run page init
+  const fn = pageInits[name];
+  if(fn) fn();
+}
+
+// ═══════════════════════════════════════════════════
+// DEAL CARD
+// ═══════════════════════════════════════════════════
+function cardHTML(d, big=false){
+  const urg = d.expiry>0&&d.expiry<3600;
+  const sv = S.saved.has(d.id);
+  return `<div class="dcard${d.flash?' flash glow':''}" onclick="openDeal(${d.id})" data-id="${d.id}">
+    ${d.flash?'<div class="fbadge">⚡ FLASH</div>':''}
+    <div class="dthumb"${big?' style="height:150px;font-size:52px"':''}>
+      ${d.emoji}<div class="ddisc">-${d.disc}%</div>
+    </div>
+    <div class="dbody">
+      <div class="dshop">${d.shop} <span class="vfy">✓</span></div>
+      <div class="dtitle">${d.title}</div>
+      <div class="dmeta">
+        <span class="dtag ${fmt.tag(d.cat)}">${fmt.tagLbl(d.cat)}</span>
+        <span class="ddist">📍 ${fmt.dist(d.dist)}</span>
+        ${d.sightings?`<span style="font-size:10px;color:var(--tx3)">👁 ${d.sightings}</span>`:''}
+      </div>
+      <div class="dtimer${urg?' urg':''}" data-tid="${d.id}">⏱ ${fmt.time(d.expiry)}</div>
+    </div>
+    <div class="dfoot">
+      <span class="wi">✓ ${d.worthit}% worth it</span>
+      <button class="bmb${sv?' sv':''}" onclick="toggleSave(event,${d.id})">🔖</button>
+    </div>
+  </div>`;
+}
+
+function toggleSave(e,id){
+  e.stopPropagation();
+  S.saved.has(id)?S.saved.delete(id):S.saved.add(id);
+  saveS();
+  document.querySelectorAll(`[data-id="${id}"] .bmb`).forEach(b=>{
+    b.classList.toggle('sv',S.saved.has(id));
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// DEAL MODAL
+// ═══════════════════════════════════════════════════
+function openDeal(id){
+  const d=DEALS.find(x=>x.id===id);if(!d)return;
+  S.viewed=[id,...S.viewed.filter(x=>x!==id)].slice(0,20);saveS();
+  const sv=S.saved.has(id);
+  document.getElementById('modal-main').innerHTML=`
+    <div style="font-size:80px;text-align:center;padding:24px;background:var(--bg3);border-radius:var(--r);margin-bottom:16px">${d.emoji}</div>
+    <div class="dshop mb8">${d.shop} · <span class="vfy">✓ Verified</span></div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:10px;line-height:1.1">${d.title}</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:18px;line-height:1.65">${d.desc}</div>
+    <div class="g2 mb16">
+      <div style="text-align:center;padding:14px;background:var(--bg3);border-radius:var(--r2)">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--ac);letter-spacing:1px">-${d.disc}%</div>
+        <div class="muted" style="font-size:10px">Discount</div>
+      </div>
+      <div style="text-align:center;padding:14px;background:var(--bg3);border-radius:var(--r2)">
+        <div style="font-size:11px;color:var(--tx3);text-decoration:line-through">${fmt.price(d.orig)}</div>
+        <div style="font-size:22px;font-weight:700;margin:3px 0">${fmt.price(d.price)}</div>
+        <div style="font-size:11px;color:var(--gr)">Save ${fmt.price(d.orig-d.price)}</div>
+      </div>
+    </div>
+    <div class="mb16">
+      <div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Community Verdict</div>
+      <div class="obar" style="height:8px;border-radius:4px"><div class="ofill" style="width:${d.worthit}%;background:var(--gr)"></div></div>
+      <div style="font-size:11px;color:var(--gr);margin-top:4px">${d.worthit}% say "Worth it" · ⭐ ${d.rating}</div>
+    </div>
+    <div class="fca gap8" style="flex-wrap:wrap">
+      <button class="btn btn-p" onclick="alert('Directions to ${d.shop}!')">📍 Directions</button>
+      <button class="btn btn-g" id="msv-btn" onclick="mToggleSave(${d.id})">${sv?'🔖 Saved':'+ Save Deal'}</button>
+      ${d.flash?'<div class="live"><div class="ldot"></div>FLASH</div>':''}
+    </div>`;
+  document.getElementById('modal-side').innerHTML=`
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⏱ Time Left</div>
+    <div class="mono" style="font-size:38px;font-weight:600;color:var(--ac)" data-tid="${d.id}" id="mc-timer">${fmt.time(d.expiry)}</div>
+    <div class="muted mb16" style="font-size:10px">Expires automatically</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">📍 Distance</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:16px">${fmt.dist(d.dist)}</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">👁 Sightings (${d.sightings})</div>
+    <div class="sight"><div class="sav">😊</div><div><div class="stx">Confirmed active, short queue!</div><div class="stm">5m ago</div></div></div>
+    <div class="sight"><div class="sav">😎</div><div><div class="stx">Still in stock, go now</div><div class="stm">18m ago</div></div></div>
+    <button class="btn btn-g wf mt8" style="font-size:11px;margin-top:10px" onclick="alert('Sighting added! Thanks!')">+ Add Sighting</button>`;
+  document.getElementById('deal-modal').classList.add('on');
+}
+
+function mToggleSave(id){
+  S.saved.has(id)?S.saved.delete(id):S.saved.add(id);saveS();
+  const b=document.getElementById('msv-btn');
+  if(b)b.textContent=S.saved.has(id)?'🔖 Saved':'+ Save Deal';
+}
+function closeDeal(){document.getElementById('deal-modal').classList.remove('on')}
+
+// ═══════════════════════════════════════════════════
+// COUNTDOWN
+// ═══════════════════════════════════════════════════
+setInterval(()=>{
+  DEALS.forEach(d=>{
+    if(d.expiry>0)d.expiry--;
+    const urg=d.expiry>0&&d.expiry<3600;
+    document.querySelectorAll(`[data-tid="${d.id}"]`).forEach(el=>{
+      el.textContent=`⏱ ${fmt.time(d.expiry)}`;
+      el.className=`dtimer${urg?' urg':''}`;
+    });
+    const mc=document.getElementById('mc-timer');
+    if(mc&&parseInt(mc.dataset.tid)===d.id)mc.textContent=fmt.time(d.expiry);
+  });
+},1000);
+
+// ═══════════════════════════════════════════════════
+// TICKER
+// ═══════════════════════════════════════════════════
+function initTicker(){
+  const fl=DEALS.filter(d=>d.flash);
+  const h=fl.map(d=>`<span class="titem">${d.emoji} <strong style="color:var(--tx)">${d.shop}</strong> <span class="tpct">-${d.disc}%</span> · ${d.title} · ${fmt.dist(d.dist)}</span>`).join('');
+  document.getElementById('ticker').innerHTML=h+h;
+}
+
+// ═══════════════════════════════════════════════════
+// PAGE: FEED
+// ═══════════════════════════════════════════════════
+function setCat(cat,el){S.cat=cat;document.querySelectorAll('#cat-chips .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderFeed();}
+function toggleFlash(el){S.flashF=!S.flashF;el.classList.toggle('on',S.flashF);renderFeed();}
+
+function renderFeed(){
+  let list=[...DEALS];
+  if(S.cat!=='all')list=list.filter(d=>d.cat===S.cat);
+  if(S.flashF)list=list.filter(d=>d.flash);
+  const q=(document.getElementById('feed-q')||{}).value||'';
+  if(q)list=list.filter(d=>d.title.toLowerCase().includes(q.toLowerCase())||d.shop.toLowerCase().includes(q.toLowerCase()));
+  list.sort((a,b)=>a.dist-b.dist);
+  const cnt=document.getElementById('feed-cnt');
+  if(cnt)cnt.textContent=`${list.length} deal${list.length!==1?'s':''}`;
+  const grid=document.getElementById('deal-grid');
+  if(!grid)return;
+  grid.innerHTML=list.length?list.map(d=>cardHTML(d)).join(''):`<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--tx3)"><div style="font-size:40px;margin-bottom:12px">🏷</div><div style="font-size:14px;font-weight:600">No deals found</div></div>`;
+  // Heatmap
+  const hm=document.getElementById('hmap');
+  if(hm){const zones=[{n:'High Street',d:94,c:'var(--ac)'},{n:'Main Market',d:72,c:'var(--am)'},{n:'Food Street',d:55,c:'var(--bl)'},{n:'Mall Zone',d:38,c:'var(--pu)'}];
+    hm.innerHTML=zones.map(z=>`<div class="mb8"><div class="fcb mb8" style="font-size:11px"><span>${z.n}</span><span class="muted">${z.d}/km²</span></div><div class="obar"><div class="ofill" style="width:${z.d}%;background:${z.c}"></div></div></div>`).join('')}
+  // Sightings
+  const fs=document.getElementById('fsights');
+  if(fs)fs.innerHTML=[{u:'@nearby_user',t:'Deal confirmed — queue is short!',tm:'3m',e:'😊'},{u:'@shopper22',t:'Stock running low, go fast!',tm:'11m',e:'🙃'},{u:'@dealhunter',t:'Just redeemed — totally worth it!',tm:'28m',e:'😎'}].map(s=>`<div class="sight"><div class="sav">${s.e}</div><div><div class="stx"><strong>${s.u}</strong>: ${s.t}</div><div class="stm">${s.tm} ago</div></div></div>`).join('');
+  // Expiring
+  const fe=document.getElementById('fexpire');
+  if(fe){const ex=DEALS.filter(d=>d.expiry>0&&d.expiry<7200).sort((a,b)=>a.expiry-b.expiry).slice(0,4);
+    fe.innerHTML=ex.length?ex.map(d=>`<div class="mc" onclick="openDeal(${d.id})"><div class="mem">${d.emoji}</div><div class="minf"><div class="mshp">${d.shop}</div><div class="mttl">${d.title}</div><div class="msub dtimer urg" data-tid="${d.id}">⏱ ${fmt.time(d.expiry)}</div></div><div style="font-size:18px;font-weight:700;color:var(--ac)">-${d.disc}%</div></div>`).join(''):'<div style="font-size:11px;color:var(--tx3)">No deals expiring soon</div>'}
+}
+
+// ═══════════════════════════════════════════════════
+// PAGE: MAP
+// ═══════════════════════════════════════════════════
+function setMapCat(cat,el){S.mapCat=cat;document.querySelectorAll('#pg-map .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderMapList();renderMapPins();}
+function getMapDeals(){let l=[...DEALS];if(S.mapCat!=='all')l=l.filter(d=>d.cat===S.mapCat);const q=(document.getElementById('map-q')||{}).value||'';if(q)l=l.filter(d=>d.shop.toLowerCase().includes(q.toLowerCase()));return l;}
+function renderMapList(){
+  const list=getMapDeals();
+  const cnt=document.getElementById('map-cnt');if(cnt)cnt.textContent=`${list.length} deals in view`;
+  const el=document.getElementById('map-list');if(!el)return;
+  el.innerHTML=list.map(d=>`<div class="mc" onclick="openDeal(${d.id})"><div class="mem">${d.emoji}</div><div class="minf"><div class="mshp">${d.shop} · <span class="ac mono">-${d.disc}%</span></div><div class="mttl">${d.title.substring(0,34)}${d.title.length>34?'…':''}</div><div class="msub">📍 ${fmt.dist(d.dist)}</div></div>${d.flash?'<div class="live" style="font-size:9px"><div class="ldot"></div>FLASH</div>':''}</div>`).join('');
+}
+function renderMapPins(){
+  const list=getMapDeals();
+  const el=document.getElementById('map-pins');if(!el)return;
+  el.innerHTML=list.map(d=>`<div class="mpin" style="left:${d.lng||50}%;top:${d.lat||50}%" onclick="openDeal(${d.id})"><div class="pbox${d.flash?' pfl':''}">${d.emoji} -${d.disc}%</div><div class="ptail"></div></div>`).join('');
+}
+function toggleHeat(el){S.heatOn=!S.heatOn;document.getElementById('heat-trk').classList.toggle('on',S.heatOn);document.getElementById('heat-blobs').style.display=S.heatOn?'block':'none';}
+function toggleHeatBtn(){S.heatOn=!S.heatOn;document.getElementById('heat-trk').classList.toggle('on',S.heatOn);document.getElementById('heat-blobs').style.display=S.heatOn?'block':'none';}
+
+// ═══════════════════════════════════════════════════
+// PAGE: FLASH
+// ═══════════════════════════════════════════════════
+function renderFlash(){
+  const fl=DEALS.filter(d=>d.flash).sort((a,b)=>a.expiry-b.expiry);
+  const cnt=document.getElementById('flash-cnt');if(cnt)cnt.textContent=`${fl.length} active`;
+  const grid=document.getElementById('flash-grid');const empty=document.getElementById('flash-empty');
+  if(!fl.length){if(grid)grid.style.display='none';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  if(grid){grid.style.display='';grid.innerHTML=fl.map(d=>cardHTML(d,true)).join('');}
+}
+
+// ═══════════════════════════════════════════════════
+// PAGE: ROUTE
+// ═══════════════════════════════════════════════════
+function renderRoutes(){
+  const el=document.getElementById('routes-list');if(!el)return;
+  if(!S.routes.length){el.innerHTML=`<div style="background:var(--sur);border:1px dashed var(--bd2);border-radius:var(--r);padding:24px;text-align:center;color:var(--tx3)"><div style="font-size:32px;margin-bottom:8px">🛣</div><div style="font-size:13px;font-weight:600">No routes saved</div><div style="font-size:11px;margin-top:4px">Use the form on the right to add your commute</div></div>`;return;}
+  el.innerHTML=S.routes.map((r,i)=>`<div class="rcard"><div style="font-size:26px">🛣</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${r.from} → ${r.to}</div><div style="font-size:10px;color:var(--tx3);margin-top:2px">Radius: ${r.radius}m</div></div><div class="fca gap6"><div class="live"><div class="ldot"></div>ACTIVE</div><button class="btn btn-d btn-sm" onclick="delRoute(${i})">✕</button></div></div>`).join('');
+  const rd=document.getElementById('route-deals');
+  if(rd){const deals=DEALS.filter(d=>d.dist<=1).slice(0,6);rd.innerHTML=deals.map(d=>cardHTML(d)).join('');}
+}
+function saveRoute(){
+  const from=document.getElementById('r-start').value.trim();
+  const to=document.getElementById('r-end').value.trim();
+  const radius=document.getElementById('rad-v').textContent.replace('m','');
+  if(!from||!to){alert('Enter start and end points.');return;}
+  S.routes.push({from,to,radius,from_time:document.getElementById('r-from').value,to_time:document.getElementById('r-to').value});
+  saveS();renderRoutes();document.getElementById('r-start').value='';document.getElementById('r-end').value='';
+}
+function delRoute(i){S.routes.splice(i,1);saveS();renderRoutes();}
+
+// ═══════════════════════════════════════════════════
+// PAGE: BOOKMARKS
+// ═══════════════════════════════════════════════════
+let bmCat='all';
+function renderBM(){
+  let list=[...S.saved].map(id=>DEALS.find(d=>d.id===id)).filter(Boolean);
+  const cnt=document.getElementById('bm-cnt');if(cnt)cnt.textContent=`${list.length} saved`;
+  // Collections
+  const cols=document.getElementById('bm-cols');
+  if(cols){const cats=[{n:'All',i:'🔖',c:'all',count:list.length},{n:'Food',i:'🍔',c:'food',count:list.filter(d=>d.cat==='food').length},{n:'Flash',i:'⚡',c:'flash',count:list.filter(d=>d.flash).length},{n:'Expiring',i:'⏳',c:'expiring',count:list.filter(d=>d.expiry<14400).length}];
+    cols.innerHTML=cats.map(c=>`<div style="display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:var(--r2);cursor:pointer;font-size:12px;color:${bmCat===c.c?'var(--ac)':'var(--tx2)'};background:${bmCat===c.c?'var(--sur3)':'none'};margin-bottom:3px;transition:all .15s" onclick="bmCat='${c.c}';renderBM()">${c.i} ${c.n} <span style="margin-left:auto;font-size:10px;color:var(--tx3)">${c.count}</span></div>`).join('')}
+  // Filter
+  if(bmCat==='food')list=list.filter(d=>d.cat==='food');
+  else if(bmCat==='flash')list=list.filter(d=>d.flash);
+  else if(bmCat==='expiring')list=list.filter(d=>d.expiry<14400);
+  // Expiring banner
+  const eb=document.getElementById('bm-expbanner');
+  const exp=([...S.saved].map(id=>DEALS.find(d=>d.id===id)).filter(Boolean)).filter(d=>d.expiry>0&&d.expiry<14400);
+  if(eb)eb.innerHTML=exp.length?`<div style="background:rgba(255,61,107,.08);border:1px solid rgba(255,61,107,.25);border-radius:var(--r);padding:12px 16px;margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:var(--ac);margin-bottom:6px">⚠ ${exp.length} saved deal${exp.length>1?'s':''} expiring soon</div>${exp.map(d=>`<div style="font-size:11px;color:var(--tx2);padding:2px 0">${d.emoji} ${d.shop} — <span class="mono" style="color:var(--am)">${fmt.time(d.expiry)}</span></div>`).join('')}</div>`:'';
+  const grid=document.getElementById('bm-grid');const empty=document.getElementById('bm-empty');
+  if(!list.length){if(grid)grid.style.display='none';if(empty)empty.style.display='block';return;}
+  if(grid){grid.style.display='';grid.innerHTML=list.map(d=>cardHTML(d)).join('');}
+  if(empty)empty.style.display='none';
+}
+
+// ═══════════════════════════════════════════════════
+// PAGE: NOTIFICATIONS
+// ═══════════════════════════════════════════════════
+function setNTab(tab,el){S.ntab=tab;document.querySelectorAll('[data-nt]').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderNotifs();}
+function renderNotifs(){
+  let list=S.ntab==='all'?S.notifs:S.notifs.filter(n=>n.type===S.ntab);
+  const unr=S.notifs.filter(n=>!n.read).length;
+  const cnt=document.getElementById('unr-cnt');if(cnt)cnt.textContent=unr?`${unr} unread`:'All read';
+  const el=document.getElementById('notif-list');if(!el)return;
+  if(!list.length){el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--tx3)"><div style="font-size:40px;margin-bottom:12px">🔔</div><div>Nothing here</div></div>`;return;}
+  el.innerHTML=list.map(n=>`<div class="nit${n.read?'':' unr'}" onclick="markRead(${n.id})"><div class="nico" style="background:${n.bg}">${n.icon}</div><div style="flex:1"><div class="nttl">${n.title}</div><div class="ndsc">${n.desc}</div><div class="ntm">${n.time}</div></div>${n.read?'':'<div class="udot"></div>'}</div>`).join('');
+}
+function markRead(id){const n=S.notifs.find(x=>x.id===id);if(n){n.read=true;saveS();renderNotifs();}}
+function markAllRead(){S.notifs.forEach(n=>n.read=true);saveS();renderNotifs();}
+function clearNotifs(){if(confirm('Clear all notifications?')){S.notifs=[];saveS();renderNotifs();}}
+
+// ═══════════════════════════════════════════════════
+// PAGE: SURPRISE
+// ═══════════════════════════════════════════════════
+function setSurpCat(cat,el){S.surpCat=cat;document.querySelectorAll('#surp-chips .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function rollSurprise(){
+  let pool=DEALS.filter(d=>d.dist<=.5&&d.rating>=4);
+  if(S.surpCat!=='all')pool=pool.filter(d=>d.cat===S.surpCat);
+  const btn=document.getElementById('surp-btn');
+  const rev=document.getElementById('surp-rev');
+  if(!pool.length){document.getElementById('surp-ttl').textContent='No deals nearby';document.getElementById('surp-dsc').textContent='Try a different category or check back soon.';if(rev)rev.style.display='none';return;}
+  if(btn){btn.textContent='🎲 Picking…';btn.disabled=true;}
+  const emojis=pool.map(d=>d.emoji);let f=0;
+  const spin=setInterval(()=>{
+    const em=document.getElementById('surp-em');if(em)em.textContent=emojis[f%emojis.length];f++;
+    if(f>12){clearInterval(spin);const pick=pool[Math.floor(Math.random()*pool.length)];showSurprise(pick);if(btn){btn.textContent='🔄 Try Again';btn.disabled=false;}}
+  },80);
+}
+function showSurprise(d){
+  const em=document.getElementById('surp-em');if(em)em.textContent=d.emoji;
+  const ttl=document.getElementById('surp-ttl');if(ttl)ttl.textContent=d.title;
+  const dsc=document.getElementById('surp-dsc');if(dsc)dsc.textContent=`📍 ${fmt.dist(d.dist)} · ⭐ ${d.rating} · ${d.worthit}% say worth it`;
+  const rev=document.getElementById('surp-rev');
+  if(rev){rev.style.display='block';rev.innerHTML=`<div class="fca gap12 mb12"><div style="font-size:40px">${d.emoji}</div><div><div style="font-weight:700;font-size:15px">${d.shop}</div><span class="vfy">✓ Verified</span></div><div style="margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--ac)">-${d.disc}%</div></div><div style="font-size:12px;color:var(--tx2);margin-bottom:14px;line-height:1.6">${d.desc}</div><div class="fca gap8"><button class="btn btn-p btn-sm" onclick="openDeal(${d.id})">View Deal</button><button class="btn btn-g btn-sm" onclick="alert('Directions…')">📍 Directions</button></div>`;}
+  S.surpHist.unshift({emoji:d.emoji,shop:d.shop,title:d.title,when:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
+  S.surpHist=S.surpHist.slice(0,6);saveS();renderSurpHist();
+}
+function renderSurpHist(){
+  const el=document.getElementById('surp-hist');if(!el)return;
+  el.innerHTML=S.surpHist.length?S.surpHist.map(s=>`<div class="mc"><div class="mem">${s.emoji}</div><div class="minf"><div class="mshp">${s.when}</div><div class="mttl">${s.shop}</div><div class="msub">${s.title}</div></div></div>`).join(''):'<div style="font-size:12px;color:var(--tx3)">Your previous surprises appear here.</div>';
+}
+
+// ═══════════════════════════════════════════════════
+// PAGE: BUSINESS
+// ═══════════════════════════════════════════════════
+function setBizTab(tab,el){
+  S.bizTab=tab;
+  document.querySelectorAll('[data-bt]').forEach(t=>t.classList.remove('on'));if(el)el.classList.add('on');
+  const c=document.getElementById('biz-content');if(!c)return;
+  if(tab==='overview')renderBizOverview(c);
+  else if(tab==='deals')renderBizDeals(c);
+  else if(tab==='analytics')renderBizAnalytics(c);
+  else if(tab==='insights')renderBizInsights(c);
+  else if(tab==='occupancy')renderBizOccupancy(c);
+}
+function renderBizOverview(c){
+  c.innerHTML=`<div class="g4 mb16">
+    <div class="sc"><div class="slbl">Total Views</div><div class="sval" style="color:var(--bl)">${S.myDeals.reduce((s,d)=>s+(d.views||0),0)||0}</div><div style="font-size:11px;color:var(--gr);margin-top:4px">↑ Post deals to see stats</div></div>
+    <div class="sc"><div class="slbl">Redemptions</div><div class="sval" style="color:var(--gr)">${S.myDeals.reduce((s,d)=>s+(d.red||0),0)||0}</div></div>
+    <div class="sc"><div class="slbl">Active Deals</div><div class="sval" style="color:var(--ac)">${S.myDeals.filter(d=>d.active).length}</div><div style="font-size:11px;color:var(--tx3);margin-top:4px">${S.myDeals.length} total</div></div>
+    <div class="sc"><div class="slbl">Avg Rating</div><div class="sval" style="color:var(--am)">—</div></div>
+  </div>
+  <div class="g2">
+    <div class="sc"><div style="font-weight:600;margin-bottom:4px">Peak Hours (Last 7 Days)</div><div style="font-size:11px;color:var(--tx3);margin-bottom:12px">When users engage most with deals</div>
+      <div class="bchart" id="peak-ch" style="height:90px"></div>
+      <div class="flex mt8" style="font-size:9px;color:var(--tx3)" id="peak-lb"></div>
+    </div>
+    <div class="sc"><div style="font-weight:600;margin-bottom:4px">Quick Actions</div>
+      <button class="btn btn-p wf mb8" onclick="setBizTab('deals',document.querySelector('[data-bt=deals]'))">+ Post New Deal</button>
+      <button class="btn btn-g wf mb8" onclick="setBizTab('occupancy',document.querySelector('[data-bt=occupancy]'))">📊 Live Occupancy</button>
+      <button class="btn btn-g wf" onclick="go('verify')">✓ Verify Business</button>
+    </div>
+  </div>`;
+  setTimeout(()=>{
+    const v=[30,22,58,74,92,86,98,80,60,40,28,16],l=['8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p','7p'],mx=Math.max(...v);
+    const ch=document.getElementById('peak-ch'),lb=document.getElementById('peak-lb');
+    if(ch)ch.innerHTML=v.map((x,i)=>`<div class="bar${x>=88?' pk':''}" style="height:${x/mx*100}%;flex:1" title="${l[i]}"></div>`).join('');
+    if(lb)lb.innerHTML=l.map(x=>`<div style="flex:1;text-align:center">${x}</div>`).join('');
+  },50);
+}
+function renderBizDeals(c){
+  c.innerHTML=`<div class="g2">
+    <div>
+      <div style="font-weight:600;margin-bottom:12px">Your Deals (${S.myDeals.length})</div>
+      ${S.myDeals.length?S.myDeals.map((d,i)=>`<div style="background:var(--sur);border:1px solid var(--bd);border-radius:var(--r2);padding:12px;margin-bottom:10px;display:flex;gap:10px;align-items:center"><div style="font-size:30px">${d.emoji||'🏷'}</div><div style="flex:1"><div style="font-weight:600;font-size:13px">${d.title}</div><div style="font-size:10px;color:var(--tx3);margin-top:2px">${d.cat} · -${d.disc}% · ${d.posted}</div></div><div class="fca gap6" style="flex-direction:column;align-items:flex-end"><div class="${d.active?'live':'chip'}">${d.active?'<div class="ldot"></div>LIVE':'PENDING'}</div><button class="btn btn-d btn-sm mt8" style="margin-top:5px" onclick="removeBizDeal(${i})">Remove</button></div></div>`).join(''):`<div style="background:var(--sur);border:1px dashed var(--bd2);border-radius:var(--r);padding:24px;text-align:center;color:var(--tx3)"><div style="font-size:32px;margin-bottom:8px">🏷</div><div style="font-size:13px;font-weight:600">No deals posted yet</div></div>`}
+    </div>
+    <div class="sc">
+      <div style="font-weight:700;font-size:14px;margin-bottom:16px">+ Post New Deal</div>
+      <div class="fg"><label class="fl">Title</label><input class="fi" type="text" placeholder="e.g. 40% off all meals" id="nd-ttl"></div>
+      <div class="g2" style="gap:8px"><div class="fg"><label class="fl">Discount %</label><input class="fi" type="number" placeholder="40" min="1" max="99" id="nd-disc"></div><div class="fg"><label class="fl">Orig Price</label><input class="fi" type="number" placeholder="1000" id="nd-orig"></div></div>
+      <div class="fg"><label class="fl">Category</label><select class="fi" id="nd-cat"><option value="food">🍔 Food</option><option value="fashion">👗 Fashion</option><option value="electronics">📱 Electronics</option><option value="beauty">💄 Beauty</option><option value="sports">⚽ Sports</option><option value="home">🏠 Home</option></select></div>
+      <div class="fg"><label class="fl">Emoji</label><input class="fi" type="text" placeholder="🏷" id="nd-em" maxlength="2"></div>
+      <div class="fg"><label class="fl">Description</label><textarea class="fi" placeholder="What makes this deal special?" id="nd-dsc"></textarea></div>
+      <div class="fg"><label class="fl">Flash Deal</label><div class="toggle" onclick="this.querySelector('.trk').classList.toggle('on')"><div class="trk" id="nd-flash"><div class="tth"></div></div><span class="tlb">Show with flash glow & ticker</span></div></div>
+      <button class="btn btn-p wf" onclick="postBizDeal()">Submit for Review</button>
+      <div style="font-size:10px;color:var(--tx3);text-align:center;margin-top:7px">Reviewed within 2 hours</div>
+    </div>
+  </div>`;
+}
+function postBizDeal(){
+  const ttl=document.getElementById('nd-ttl').value.trim();
+  const disc=parseInt(document.getElementById('nd-disc').value);
+  if(!ttl){alert('Enter a deal title.');return;}if(!disc||disc<1||disc>99){alert('Enter a valid discount (1–99%).');return;}
+  const orig=parseInt(document.getElementById('nd-orig').value)||0;
+  S.myDeals.push({title:ttl,disc,orig,price:Math.round(orig*(1-disc/100)),cat:document.getElementById('nd-cat').value,emoji:document.getElementById('nd-em').value.trim()||'🏷',desc:document.getElementById('nd-dsc').value.trim(),flash:document.getElementById('nd-flash').classList.contains('on'),active:false,views:0,red:0,posted:new Date().toLocaleDateString()});
+  saveS();document.getElementById('biz-act').textContent=S.myDeals.filter(d=>d.active).length;
+  alert('Deal submitted! Goes live within 2 hours.');
+  setBizTab('deals',document.querySelector('[data-bt=deals]'));
+}
+function removeBizDeal(i){if(!confirm('Remove this deal?'))return;S.myDeals.splice(i,1);saveS();setBizTab('deals',document.querySelector('[data-bt=deals]'));}
+function renderBizAnalytics(c){
+  c.innerHTML=`<div class="sc mb14"><div class="bchart" id="an-ch" style="height:100px"></div><div class="flex mt8" style="font-size:9px;color:var(--tx3)">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div style="flex:1;text-align:center">${d}</div>`).join('')}</div></div>
+  <div class="g3"><div class="sc"><div class="slbl">Best Day</div><div class="sval" style="font-size:20px;color:var(--gr)">Sat</div></div><div class="sc"><div class="slbl">Avg Dwell</div><div class="sval" style="font-size:20px;color:var(--bl)">—</div></div><div class="sc"><div class="slbl">Conversion</div><div class="sval" style="font-size:20px;color:var(--am)">—</div></div></div>`;
+  setTimeout(()=>{const v=[40,28,65,52,80,92,60],mx=Math.max(...v),ch=document.getElementById('an-ch');if(ch)ch.innerHTML=v.map(x=>`<div class="bar${x>=88?' pk':''}" style="height:${x/mx*100}%;flex:1"></div>`).join('');},50);
+}
+function renderBizInsights(c){
+  c.innerHTML=`<div class="g2">
+    <div class="sc"><div style="font-weight:600;margin-bottom:12px">Neighborhood Trends</div>${[['Food',82,'var(--gr)'],['Fashion',66,'#ec4899'],['Electronics',54,'var(--bl)'],['Beauty',42,'var(--pu)'],['Sports',30,'var(--am)']].map(([l,p,cl],i)=>`<div class="fca gap8 mb8"><span style="font-size:10px;color:var(--tx3);width:14px">${i+1}</span><span style="font-size:11px;width:90px">${l}</span><div style="flex:1;height:5px;background:var(--sur3);border-radius:3px;overflow:hidden"><div style="width:${p}%;height:100%;background:${cl};border-radius:3px"></div></div><span style="font-size:11px;color:var(--tx3);width:30px;text-align:right">${p}%</span></div>`).join('')}</div>
+    <div class="sc"><div style="font-weight:600;margin-bottom:12px">Competitor Activity</div>${[{n:'Nearby Biz A',d:4,a:35,live:true},{n:'Nearby Biz B',d:2,a:28,live:false},{n:'Nearby Biz C',d:7,a:42,live:true}].map(x=>`<div style="padding:10px;background:var(--bg3);border-radius:var(--r2);margin-bottom:8px;display:flex;align-items:center;gap:8px"><div style="flex:1"><div style="font-size:12px;font-weight:600">${x.n}</div><div style="font-size:10px;color:var(--tx3)">${x.d} deals · avg -${x.a}%</div></div><div class="${x.live?'live':'chip'}">${x.live?'<div class="ldot"></div>ACTIVE':'QUIET'}</div></div>`).join('')}</div>
+  </div>`;
+}
+function renderBizOccupancy(c){
+  const opts=[{k:'lim',l:'Limited Stock!',d:'Show "Running out" badge on your deals',i:'📦'},{k:'tbl',l:'Tables Available',d:'Display table count for dine-in',i:'🪑'},{k:'que',l:'Short Queue Now',d:'Signal minimal wait time',i:'⚡'},{k:'sol',l:'Sold Out',d:'Mark deal sold out without removing it',i:'🚫'}];
+  const occ=JSON.parse(localStorage.getItem('nd-occ')||'{}');
+  c.innerHTML=`<div style="max-width:480px"><div style="font-weight:600;margin-bottom:4px">Live Occupancy Signals</div><div style="font-size:12px;color:var(--tx2);margin-bottom:18px;line-height:1.6">These badges appear on your deal cards in real time, driving foot traffic during slow hours.</div>${opts.map(o=>`<div style="background:var(--sur);border:1px solid var(--bd);border-radius:var(--r2);padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:10px"><div style="font-size:24px">${o.i}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${o.l}</div><div style="font-size:10px;color:var(--tx3)">${o.d}</div></div><div class="toggle" onclick="toggleOcc('${o.k}',this)"><div class="trk${occ[o.k]?' on':''}"><div class="tth"></div></div></div></div>`).join('')}<div style="margin-top:14px;padding:14px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:var(--r2);font-size:12px;color:var(--gr)">📈 Shops using Live Occupancy see <strong>2.4×</strong> more foot traffic during off-peak hours.</div></div>`;
+}
+function toggleOcc(k,el){const occ=JSON.parse(localStorage.getItem('nd-occ')||'{}');occ[k]=!occ[k];localStorage.setItem('nd-occ',JSON.stringify(occ));el.querySelector('.trk').classList.toggle('on',occ[k]);}
+
+// ═══════════════════════════════════════════════════
+// PAGE: VERIFY
+// ═══════════════════════════════════════════════════
+function renderVerify(){
+  const steps=['Business Info','Address','Upload Docs','Complete'];
+  const vs=document.getElementById('vsteps');if(vs)vs.innerHTML=steps.map((_,i)=>`<div class="stdot${i<S.vStep?' dn':i===S.vStep?' cur':''}"></div>`).join('');
+  const c=document.getElementById('vcontent');if(!c)return;
+  if(S.vStep===0){c.innerHTML=`<div class="sc"><div style="font-weight:700;font-size:15px;margin-bottom:18px">Step 1 — Business Info</div><div class="fg"><label class="fl">Business Name</label><input class="fi" type="text" placeholder="Your shop name" id="v-nm"></div><div class="fg"><label class="fl">Type</label><select class="fi" id="v-tp"><option>Restaurant / Café</option><option>Retail Store</option><option>Beauty Salon</option><option>Gym / Sports</option><option>Electronics</option></select></div><div class="fg"><label class="fl">Owner Name</label><input class="fi" type="text" placeholder="Full name" id="v-ow"></div><div class="fg"><label class="fl">Phone</label><input class="fi" type="tel" placeholder="+92 300 0000000" id="v-ph"></div><button class="btn btn-p" onclick="vNext(1)">Next: Address →</button></div>`;
+  }else if(S.vStep===1){c.innerHTML=`<div class="sc"><div style="font-weight:700;font-size:15px;margin-bottom:18px">Step 2 — Address</div><div class="fg"><label class="fl">Street Address</label><input class="fi" type="text" placeholder="Street, Shop #" id="v-st"></div><div class="fg"><label class="fl">Area / Neighbourhood</label><input class="fi" type="text" placeholder="e.g. Gulberg, DHA" id="v-ar"></div><div class="fg"><label class="fl">City</label><input class="fi" type="text" placeholder="e.g. Lahore" id="v-cy"></div><div style="background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r2);height:130px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;cursor:pointer;flex-direction:column;gap:8px;color:var(--tx3)" onclick="alert('Map pin picker — connect Google Maps API')"><div style="font-size:28px">📍</div><div style="font-size:12px">Pin exact location on map</div></div><div class="fca gap8"><button class="btn btn-g" onclick="vBack()">← Back</button><button class="btn btn-p" onclick="vNext(2)">Next: Docs →</button></div></div>`;
+  }else if(S.vStep===2){c.innerHTML=`<div class="sc"><div style="font-weight:700;font-size:15px;margin-bottom:18px">Step 3 — Upload Documents</div>${[['Business Registration','SECP / Trade License','📄'],['Owner CNIC','National ID front & back','🪪'],['Shop Photo','Clear exterior photo','📷']].map(([t,d,i])=>`<div class="uzone mb12" onclick="simUpload(this,'${t}')"><div style="font-size:28px;margin-bottom:6px">${i}</div><div style="font-size:13px;font-weight:600">${t}</div><div style="font-size:11px;color:var(--tx3)">${d}</div><div style="font-size:10px;color:var(--ac);margin-top:6px">Click to upload</div></div>`).join('')}<div class="fca gap8 mt8"><button class="btn btn-g" onclick="vBack()">← Back</button><button class="btn btn-p" onclick="vNext(3)">Submit ✓</button></div></div>`;
+  }else{c.innerHTML=`<div class="sc tc" style="padding:40px 24px"><div style="font-size:64px;margin-bottom:16px">🎉</div><div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:10px">Application Submitted!</div><div style="font-size:13px;color:var(--tx2);max-width:380px;margin:0 auto 20px;line-height:1.65">Our team will review your documents within <strong style="color:var(--tx)">2–3 business days</strong>.</div><div class="vfy" style="justify-content:center;font-size:13px;margin-bottom:20px">✓ Verification Pending</div><div class="fca gap8" style="justify-content:center"><button class="btn btn-g" onclick="S.vStep=0;saveS();renderVerify()">Start Over</button><button class="btn btn-p" onclick="go('business')">Dashboard</button></div></div>`;}
+}
+function vNext(step){
+  if(step===1&&!document.getElementById('v-nm')?.value.trim()){alert('Enter business name.');return;}
+  if(step===2&&!document.getElementById('v-st')?.value.trim()){alert('Enter street address.');return;}
+  S.vStep=step;saveS();renderVerify();
+}
+function vBack(){S.vStep=Math.max(0,S.vStep-1);saveS();renderVerify();}
+function simUpload(el,name){el.style.borderColor='var(--gr)';el.style.background='rgba(34,197,94,.06)';const d=el.querySelector('[style*="color:var(--ac)"]');if(d){d.textContent='✓ '+name+' uploaded';d.style.color='var(--gr)';}}
+
+// ═══════════════════════════════════════════════════
+// PAGE: PROFILE
+// ═══════════════════════════════════════════════════
+function renderProfile(){
+  if(!S.user.loggedIn){
+    document.getElementById('prof-out').style.display='block';
+    document.getElementById('prof-in').style.display='none';return;
+  }
+  document.getElementById('prof-out').style.display='none';
+  document.getElementById('prof-in').style.display='block';
+  document.getElementById('pav').textContent=S.user.initials||'?';
+  document.getElementById('pname').textContent=S.user.name||'Your Name';
+  document.getElementById('ploc').textContent='📍 '+(S.profData.location||'Location not set');
+  document.getElementById('pemail').textContent=S.user.email||'';
+  document.getElementById('plvl').textContent=S.saved.size>20?'Level 3 Scout':S.saved.size>5?'Level 2 Scout':'Level 1 Scout';
+  const tags=document.getElementById('ptags');if(tags)tags.innerHTML=(S.profData.interests||[]).map(t=>`<span class="dtag ${fmt.tag(t.toLowerCase())}">${t}</span>`).join('')||'<span style="font-size:11px;color:var(--tx3)">No interests set</span>';
+  document.getElementById('ps1').textContent=S.saved.size;
+  document.getElementById('ps2').textContent=S.profData.redeemed||0;
+  document.getElementById('ps3').textContent=S.profData.sightings||0;
+  const rv=document.getElementById('rec-viewed');
+  if(rv){const recent=S.viewed.slice(0,4).map(id=>DEALS.find(d=>d.id===id)).filter(Boolean);rv.innerHTML=recent.length?recent.map(d=>cardHTML(d)).join(''):'<div style="grid-column:1/-1;font-size:12px;color:var(--tx3)">No recently viewed deals.</div>';}
+}
+function toggleEditProf(){
+  const f=document.getElementById('edit-prof-form');
+  f.style.display=f.style.display==='none'?'block':'none';
+  if(f.style.display==='block'){document.getElementById('ep-name').value=S.user.name||'';document.getElementById('ep-loc').value=S.profData.location||'';}
+}
+function saveProfEdit(){
+  const name=document.getElementById('ep-name').value.trim();
+  if(name){S.user.name=name;S.user.initials=name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);}
+  S.profData.location=document.getElementById('ep-loc').value.trim();
+  S.profData.bio=document.getElementById('ep-bio').value.trim();
+  saveS();updateAv();document.getElementById('edit-prof-form').style.display='none';renderProfile();
+}
+
+// ═══════════════════════════════════════════════════
+// PAGE: SETTINGS
+// ═══════════════════════════════════════════════════
+function setSTab(tab,el){
+  S.stab=tab;
+  document.querySelectorAll('.stab').forEach(s=>s.classList.remove('on'));if(el)el.classList.add('on');
+  const c=document.getElementById('st-content');if(!c)return;
+  if(tab==='account')renderStAccount(c);
+  else if(tab==='eprofile')renderStProfile(c);
+  else if(tab==='appear')renderStAppear(c);
+  else if(tab==='location')renderStLocation(c);
+  else if(tab==='notifset')renderStNotifs(c);
+  else if(tab==='privacy')renderStPrivacy(c);
+  else if(tab==='about')renderStAbout(c);
+}
+function renderStAccount(c){
+  if(!S.user.loggedIn){
+    c.innerHTML=`<div style="max-width:520px"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:6px">Sign In</div><div style="font-size:13px;color:var(--tx2);margin-bottom:22px">Save deals, route alerts, and sync across devices.</div><div class="sc"><div style="font-weight:700;font-size:14px;margin-bottom:16px">Create Account / Sign In</div><div class="fg"><label class="fl">Your Name</label><input class="fi" type="text" placeholder="Display name" id="lg-nm"></div><div class="fg"><label class="fl">Email</label><input class="fi" type="email" placeholder="you@example.com" id="lg-em"></div><div class="fg"><label class="fl">Password</label><input class="fi" type="password" placeholder="Min 6 characters" id="lg-pw"></div><button class="btn btn-p wf mb8" onclick="doLogin()">Sign In / Create Account</button><div style="font-size:10px;color:var(--tx3);text-align:center">Connect to Firebase/Supabase for real auth</div></div></div>`;
+  }else{
+    c.innerHTML=`<div style="max-width:520px"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:20px">Account</div><div class="sc"><div class="fca gap14 mb14" style="gap:14px"><div style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff">${S.user.initials}</div><div><div style="font-size:16px;font-weight:700">${S.user.name}</div><div style="font-size:12px;color:var(--tx2)">${S.user.email}</div><div class="vfy mt8" style="margin-top:4px">✓ Verified User</div></div></div><div class="srow"><div><div class="srlbl">Display Name</div><div class="srdsc">${S.user.name}</div></div><button class="btn btn-g btn-sm" onclick="chName()">Edit</button></div><div class="srow" style="border:none"><div><div class="srlbl" style="color:var(--ac)">Sign Out</div><div class="srdsc">You can sign back in any time</div></div><button class="btn btn-d btn-sm" onclick="doLogout()">Sign Out</button></div></div></div>`;
+  }
+}
+function doLogin(){
+  const nm=document.getElementById('lg-nm').value.trim(),em=document.getElementById('lg-em').value.trim(),pw=document.getElementById('lg-pw').value;
+  if(!nm){alert('Enter your name.');return;}if(!em||!em.includes('@')){alert('Enter a valid email.');return;}if(!pw||pw.length<6){alert('Password must be 6+ characters.');return;}
+  S.user={name:nm,email:em,initials:nm.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2),loggedIn:true};saveS();updateAv();renderStAccount(document.getElementById('st-content'));alert('Welcome, '+nm+'! 🎉');
+}
+function doLogout(){if(!confirm('Sign out?'))return;S.user={name:'',email:'',initials:'',loggedIn:false};saveS();updateAv();renderStAccount(document.getElementById('st-content'));}
+function chName(){const n=prompt('New name:',S.user.name);if(n&&n.trim()){S.user.name=n.trim();S.user.initials=n.trim().split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);saveS();updateAv();renderStAccount(document.getElementById('st-content'));}}
+
+function renderStProfile(c){
+  if(!S.user.loggedIn){c.innerHTML=`<div style="text-align:center;padding:40px;color:var(--tx3)"><div style="font-size:40px;margin-bottom:12px">🔒</div><div>Sign in to edit profile</div><button class="btn btn-p mt12" style="margin-top:12px" onclick="setSTab('account',document.querySelector('[data-st=account]'))">Sign In</button></div>`;return;}
+  c.innerHTML=`<div style="max-width:520px"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:20px">Edit Profile</div><div class="sc"><div class="fg"><label class="fl">Display Name</label><input class="fi" type="text" id="ep2-nm" value="${S.user.name||''}"></div><div class="fg"><label class="fl">Location</label><input class="fi" type="text" id="ep2-lc" placeholder="e.g. Gulberg, Lahore" value="${S.profData.location||''}"></div><div class="fg"><label class="fl">Bio</label><textarea class="fi" id="ep2-bio">${S.profData.bio||''}</textarea></div><div class="fg"><label class="fl">Interests</label><div class="chips">${['Food','Fashion','Tech','Beauty','Sports','Home'].map(cat=>`<div class="chip${(S.profData.interests||[]).includes(cat)?' on':''}" onclick="this.classList.toggle('on')" data-int="${cat}">${cat}</div>`).join('')}</div></div><button class="btn btn-p" onclick="saveStProfile()">Save Profile</button></div></div>`;
+}
+function saveStProfile(){
+  const nm=document.getElementById('ep2-nm').value.trim();if(nm){S.user.name=nm;S.user.initials=nm.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);}
+  S.profData.location=document.getElementById('ep2-lc').value.trim();
+  S.profData.bio=document.getElementById('ep2-bio').value.trim();
+  S.profData.interests=[...document.querySelectorAll('[data-int].on')].map(el=>el.dataset.int);
+  saveS();updateAv();alert('Profile saved!');
+}
+
+function renderStAppear(c){
+  c.innerHTML=`<div style="max-width:520px"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:20px">Appearance</div><div class="sc"><div class="srow"><div><div class="srlbl">Dark Mode</div><div class="srdsc">Switch between dark and light theme</div></div><div class="toggle" onclick="toggleTheme(this)"><div class="trk${S.theme==='light'?' on':''}" id="theme-trk"><div class="tth"></div></div><span class="tlb" id="theme-lbl">${S.theme==='dark'?'Dark':'Light'}</span></div></div><div class="srow"><div><div class="srlbl">Flash Ticker</div><div class="srdsc">Show live flash deal ticker at top</div></div><div class="toggle" onclick="this.querySelector('.trk').classList.toggle('on');document.getElementById('ticker-bar').style.display=this.querySelector('.trk').classList.contains('on')?'':'none'"><div class="trk on"><div class="tth"></div></div></div></div><div class="srow" style="border:none"><div><div class="srlbl">Compact Mode</div><div class="srdsc">Smaller deal cards in feed</div></div><div class="toggle" onclick="this.querySelector('.trk').classList.toggle('on')"><div class="trk"><div class="tth"></div></div></div></div></div></div>`;
+}
+function toggleTheme(el){
+  S.theme=S.theme==='dark'?'light':'dark';
+  localStorage.setItem('nd-theme',S.theme);
+  document.documentElement.setAttribute('data-theme',S.theme);
+  el.querySelector('.trk').classList.toggle('on',S.theme==='light');
+  const lbl=el.querySelector('.tlb');if(lbl)lbl.textContent=S.theme==='dark'?'Dark':'Light';
+}
+
+function renderStLocation(c){
+  const r=localStorage.getItem('nd-radius')||'2';
+  c.innerHTML=`<div style="max-width:520px"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:20px">Location</div><div class="sc mb14"><div class="srow"><div><div class="srlbl">Use My Location</div><div class="srdsc">Required for accurate distance sorting</div></div><button class="btn btn-p btn-sm" onclick="reqLoc(this)">📍 Allow</button></div><div class="srow" style="border:none"><div><div class="srlbl">Search Radius</div><div class="srdsc">How far to look for deals</div></div><span class="mono" style="font-size:13px;font-weight:600;color:var(--ac)" id="rad-disp">${r}km</span></div><input type="range" min="0.5" max="10" step="0.5" value="${r}" style="width:100%;accent-color:var(--ac);margin-top:8px" oninput="document.getElementById('rad-disp').textContent=this.value+'km';localStorage.setItem('nd-radius',this.value)"><div class="fcb mt8" style="font-size:10px;color:var(--tx3);margin-top:8px"><span>500m</span><span>2km</span><span>5km</span><span>10km</span></div></div><div class="sc"><div style="font-weight:600;margin-bottom:12px">Manual Location</div><div class="fg"><label class="fl">Default City / Area</label><input class="fi" type="text" placeholder="e.g. Gulberg, Lahore" id="man-city" value="${localStorage.getItem('nd-mancity')||''}"></div><button class="btn btn-g btn-sm" onclick="localStorage.setItem('nd-mancity',document.getElementById('man-city').value);alert('Location saved!')">Save</button></div></div>`;
+}
+function reqLoc(btn){if(!navigator.geolocation){alert('Not supported.');return;}btn.textContent='…';navigator.geolocation.getCurrentPosition(p=>{btn.textContent='✓ Allowed';btn.className='btn btn-s btn-sm';localStorage.setItem('nd-geo',JSON.stringify({lat:p.coords.latitude,lng:p.coords.longitude}));},()=>{btn.textContent='✗ Denied';});}
+
+function renderStNotifs(c){
+  c.innerHTML=`<div style="max-width:520px"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:20px">Notifications</div><div class="sc mb14"><div class="srow" style="border:none"><div><div class="srlbl">Push Notifications</div><div class="srdsc">Allow Neardis to send alerts</div></div><button class="btn btn-p btn-sm" onclick="reqPush(this)">Enable</button></div></div><div class="sc">${[{l:'Flash deals near me',d:'Instant alert for ⚡ flash deals',on:true},{l:'Saved deals expiring',d:'Reminder 1hr before expiry',on:true},{l:'Route alerts',d:'Deals along your commute',on:true},{l:'Sighting updates',d:'When users confirm deals near you',on:false},{l:'Weekly digest',d:'Sunday summary of top deals',on:false}].map((p,i)=>`<div class="srow"><div><div class="srlbl">${p.l}</div><div class="srdsc">${p.d}</div></div><div class="toggle" onclick="this.querySelector('.trk').classList.toggle('on')"><div class="trk${p.on?' on':''}"><div class="tth"></div></div></div></div>`).join('')}</div></div>`;
+}
+function reqPush(btn){if(!('Notification' in window)){alert('Not supported.');return;}Notification.requestPermission().then(p=>{if(p==='granted'){btn.textContent='✓ Enabled';btn.className='btn btn-s btn-sm';}else{btn.textContent='✗ Blocked';}});}
+
+function renderStPrivacy(c){
+  c.innerHTML=`<div style="max-width:520px"><div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:20px">Privacy & Data</div><div class="sc mb14">${[{l:'Anonymous Sightings',d:'Post sightings without showing username',on:true},{l:'Location History',d:'Remember location for better results',on:true},{l:'Usage Analytics',d:'Help improve Neardis with anonymous data',on:true}].map(p=>`<div class="srow"><div><div class="srlbl">${p.l}</div><div class="srdsc">${p.d}</div></div><div class="toggle" onclick="this.querySelector('.trk').classList.toggle('on')"><div class="trk${p.on?' on':''}"><div class="tth"></div></div></div></div>`).join('')}</div><div class="sc"><div style="font-weight:600;color:var(--ac);margin-bottom:14px">Danger Zone</div><button class="btn btn-d wf mb8" onclick="clearAll()">🗑 Clear All App Data</button><button class="btn btn-d wf" onclick="delAcct()">✕ Delete Account</button></div></div>`;
+}
+function clearAll(){if(!confirm('Clear all data?'))return;localStorage.clear();location.reload();}
+function delAcct(){if(!confirm('Delete account? Cannot be undone.'))return;S.user={name:'',email:'',initials:'',loggedIn:false};saveS();updateAv();go('feed');}
+
+function renderStAbout(c){
+  c.innerHTML=`<div style="max-width:520px"><div class="sc mb14 tc" style="padding:28px"><div style="font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:6px;background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px">NEARDIS</div><div style="font-size:12px;color:var(--tx2)">Hyperlocal Deal Discovery Platform</div><div style="font-size:11px;color:var(--tx3);margin-top:4px">v1.0.0 · Works offline · No build step needed</div></div><div class="sc mb14"><div style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:14px">Neardis connects you with real discounts from verified local businesses. No algorithms, no ads — genuine deals sorted by distance and freshness.</div><div class="fca gap8" style="flex-wrap:wrap"><span style="font-size:12px;color:var(--gr)">✓ Verified Shops</span><span style="font-size:12px;color:var(--bl)">✓ Real-time Expiry</span><span style="font-size:12px;color:var(--pu)">✓ Community-Verified</span></div></div><div class="sc"><div style="font-weight:600;margin-bottom:10px">Keyboard Shortcuts</div>${[['F','Feed'],['M','Map'],['B','Bookmarks'],['N','Notifications'],['S','Settings']].map(([k,v])=>`<div class="fcb" style="padding:5px 0;border-bottom:1px solid var(--bd);font-size:12px"><span style="color:var(--tx2)">${v}</span><kbd style="background:var(--sur3);border:1px solid var(--bd2);border-radius:4px;padding:2px 7px;font-family:'JetBrains Mono',monospace;font-size:10px">${k}</kbd></div>`).join('')}</div></div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// AUTH HELPERS
+// ═══════════════════════════════════════════════════
+function updateAv(){
+  document.querySelectorAll('.avatar,[id^=av]').forEach(a=>{a.textContent=S.user.loggedIn?S.user.initials:'👤';});
+}
+
+// ═══════════════════════════════════════════════════
+// PAGE INITS MAP
+// ═══════════════════════════════════════════════════
+const pageInits = {
+  feed: renderFeed,
+  map: ()=>{renderMapList();renderMapPins();},
+  flash: renderFlash,
+  route: renderRoutes,
+  bookmarks: renderBM,
+  notifications: renderNotifs,
+  surprise: renderSurpHist,
+  business: ()=>setBizTab(S.bizTab,document.querySelector(`[data-bt="${S.bizTab}"]`)),
+  verify: renderVerify,
+  profile: renderProfile,
+  settings: ()=>setSTab(S.stab,document.querySelector(`[data-st="${S.stab}"]`)),
+};
+
+// ═══════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  const map={f:'feed',m:'map',b:'bookmarks',n:'notifications',s:'settings'};
+  if(map[e.key.toLowerCase()])go(map[e.key.toLowerCase()]);
+});
+
+// ═══════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  document.documentElement.setAttribute('data-theme',S.theme);
+  initTicker();
+  renderFeed();
+  updateAv();
+});
+</script>
+</body>
+</html>
